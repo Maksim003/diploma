@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS incidents
     updated_at  timestamp
 );
 
-CREATE TABLE IF NOT EXISTS requests
+CREATE TABLE IF NOT EXISTS appeals
 (
     id          bigserial PRIMARY KEY,
     user_id     bigint NOT NULL REFERENCES users (id),

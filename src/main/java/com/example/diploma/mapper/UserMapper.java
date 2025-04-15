@@ -4,10 +4,14 @@ import com.example.diploma.controller.request.CreateUserRequest;
 import com.example.diploma.controller.request.UpdateUserRequest;
 import com.example.diploma.controller.response.UserResponse;
 import com.example.diploma.entity.UserEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class UserMapper {
+
+    private final DepartmentMapper departmentMapper;
 
     public UserEntity toEntity(CreateUserRequest createUser) {
         UserEntity userEntity = new UserEntity();
@@ -33,6 +37,7 @@ public class UserMapper {
                 userEntity.getSurname(),
                 userEntity.getPatronymic(),
                 userEntity.getLogin(),
+                departmentMapper.toResponse(userEntity.getDepartment()),
                 userEntity.getCreatedAt(),
                 userEntity.getUpdatedAt()
         );

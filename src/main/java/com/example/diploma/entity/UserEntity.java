@@ -1,8 +1,6 @@
 package com.example.diploma.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +28,23 @@ public class UserEntity extends BaseEntity<Long> {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private RoleEntity role;
+
+    @ManyToOne
+    @JoinColumn(name = "position_id")
+    private PositionEntity position;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private DepartmentEntity department;
+
+    public String getFullName() {
+        String fullName = surname + " " + name;
+        return (patronymic != null) ? fullName + " " + patronymic : fullName;
+    }
 
     @Override
     public String toString() {

@@ -7,6 +7,6 @@ public class NullOrNotEmptyValidator implements ConstraintValidator<NullOrNotEmp
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return s == null || !s.isEmpty();
+        return s == null || !s.trim().isEmpty();
     }
 }

@@ -6,7 +6,7 @@ import com.example.diploma.controller.response.UserResponse;
 import com.example.diploma.entity.UserEntity;
 import com.example.diploma.exception.UserNotFoundException;
 import com.example.diploma.mapper.UserMapper;
-import com.example.diploma.repository.UserRepository;
+import com.example.diploma.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -46,6 +46,10 @@ public class UserEntity extends BaseEntity<Long> {
         return (patronymic != null) ? fullName + " " + patronymic : fullName;
     }
 
+    public UserEntity(Long id) {
+        this.setId(id);
+    }
+
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[id=" + getId() + ", name=" + name + ", surname=" + surname

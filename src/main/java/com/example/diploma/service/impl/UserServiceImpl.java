@@ -1,12 +1,13 @@
-package com.example.diploma.service;
+package com.example.diploma.service.impl;
 
-import com.example.diploma.controller.request.CreateUserRequest;
-import com.example.diploma.controller.request.UpdateUserRequest;
+import com.example.diploma.controller.request.user.CreateUserRequest;
+import com.example.diploma.controller.request.user.UpdateUserRequest;
 import com.example.diploma.controller.response.UserResponse;
 import com.example.diploma.entity.UserEntity;
 import com.example.diploma.exception.UserNotFoundException;
 import com.example.diploma.mapper.UserMapper;
 import com.example.diploma.repository.jpa.UserRepository;
+import com.example.diploma.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

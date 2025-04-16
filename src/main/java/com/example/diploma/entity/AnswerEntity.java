@@ -2,11 +2,14 @@ package com.example.diploma.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "answers")
@@ -22,6 +25,8 @@ public class AnswerEntity extends BaseEntity<Long> {
     @Column(name = "is_correct")
     private Boolean isCorrect;
 
+    @ManyToMany(mappedBy = "answers")
+    private List<QuestionEntity> questions;
 
     @Override
     public String toString() {

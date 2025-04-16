@@ -1,4 +1,4 @@
-package com.example.diploma.controller.request;
+package com.example.diploma.controller.request.user;
 
 import com.example.diploma.annotation.NullOrNotEmpty;
 import jakarta.validation.constraints.NotBlank;

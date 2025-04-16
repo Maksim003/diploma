@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "departments")
 @Getter
@@ -20,6 +22,9 @@ public class DepartmentEntity extends BaseEntity<Long> {
     @OneToOne
     @JoinColumn(name = "head_id")
     private UserEntity head;
+
+    @OneToMany(mappedBy = "department")
+    private List<UserEntity> members;
 
     @Override
     public String toString() {

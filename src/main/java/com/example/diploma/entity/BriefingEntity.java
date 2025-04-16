@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "briefings")
 @Getter
@@ -20,6 +22,11 @@ public class BriefingEntity extends BaseEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "creator")
     private UserEntity creator;
+
+    @ManyToMany
+    @JoinTable(name = "m2m_briefings_questions", joinColumns = @JoinColumn(name = "briefing_id"),
+            inverseJoinColumns = @JoinColumn(name = "question_id"))
+    private List<QuestionEntity> questions;
 
     @Override
     public String toString() {

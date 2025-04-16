@@ -1,7 +1,7 @@
 package com.example.diploma.mapper;
 
-import com.example.diploma.controller.request.CreateUserRequest;
-import com.example.diploma.controller.request.UpdateUserRequest;
+import com.example.diploma.controller.request.user.CreateUserRequest;
+import com.example.diploma.controller.request.user.UpdateUserRequest;
 import com.example.diploma.controller.response.UserResponse;
 import com.example.diploma.entity.UserEntity;
 import lombok.RequiredArgsConstructor;

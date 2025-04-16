@@ -1,0 +1,22 @@
+meta {
+  name: update
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{path}}/departments/{{id}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "test",
+    "head": 3
+  }
+}
+
+vars:pre-request {
+  id: 1
+}

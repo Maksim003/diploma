@@ -22,6 +22,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentMapper departmentMapper;
 
     @Override
+    @Transactional
     public Long create(CreateDepartmentRequest createDepartment) {
         DepartmentEntity departmentEntity = departmentMapper.toEntity(createDepartment);
         return departmentRepository.save(departmentEntity).getId();

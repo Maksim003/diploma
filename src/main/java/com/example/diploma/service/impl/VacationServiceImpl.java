@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,17 +23,20 @@ public class VacationServiceImpl implements VacationService {
     private final VacationMapper vacationMapper;
 
     @Override
+    @Transactional
     public Long create(CreateVacationRequest createVacation) {
         VacationEntity vacationEntity = vacationMapper.toEntity(createVacation);
         return vacationRepository.save(vacationEntity).getId();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<VacationResponse> findAll(Pageable pageable) {
         return vacationRepository.findAll(pageable).map(vacationMapper::toResponse);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public VacationResponse findById(Long id) {
         VacationEntity vacationEntity = getByIdOrThrow(id);
         return vacationMapper.toResponse(vacationEntity);

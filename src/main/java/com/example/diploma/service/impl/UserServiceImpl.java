@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,17 +22,20 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional
     public Long create(CreateUserRequest createUser) {
         UserEntity userEntity = userMapper.toEntity(createUser);
         return userRepository.save(userEntity).getId();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<UserResponse> findAll(Pageable pageable) {
         return userRepository.findAll(pageable).map(userMapper::toResponse);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserResponse findById(Long id) {
         UserEntity userEntity = getByIdOrThrow(id);
         return userMapper.toResponse(userEntity);

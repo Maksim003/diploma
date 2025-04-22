@@ -28,6 +28,10 @@ public class BriefingEntity extends BaseEntity<Long> {
             inverseJoinColumns = @JoinColumn(name = "question_id"))
     private List<QuestionEntity> questions;
 
+    public BriefingEntity(Long id) {
+        this.setId(id);
+    }
+
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[id=" + getId() + ", type=" + type + "]";

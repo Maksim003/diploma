@@ -3,6 +3,7 @@ package com.example.diploma.mapper;
 import com.example.diploma.controller.request.briefing.CreateBriefingRequest;
 import com.example.diploma.controller.request.briefing.UpdateBriefingRequest;
 import com.example.diploma.controller.response.BriefingResponse;
+import com.example.diploma.controller.response.ShortBriefingResponse;
 import com.example.diploma.entity.BriefingEntity;
 import com.example.diploma.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class BriefingMapper {
 
     private final FullnameMapper fullnameMapper;
+    private final QuestionMapper questionMapper;
 
     public BriefingEntity toEntity(CreateBriefingRequest createBriefing) {
         BriefingEntity briefingEntity = new BriefingEntity();
@@ -26,10 +28,16 @@ public class BriefingMapper {
         briefingEntity.setType(updateBriefing.type());
     }
 
+    public ShortBriefingResponse toShortResponse(BriefingEntity briefingEntity) {
+        return new ShortBriefingResponse(briefingEntity.getType());
+    }
+
     public BriefingResponse toResponse(BriefingEntity briefingEntity) {
         return new BriefingResponse(
                 fullnameMapper.toResponse(briefingEntity.getCreator()),
-                briefingEntity.getType()
+                briefingEntity.getType(),
+                briefingEntity.getQuestions().stream()
+                        .map(questionMapper::toResponse).toList()
         );
     }
 

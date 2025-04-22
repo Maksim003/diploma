@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BriefingResultsEntity extends BaseEntity<Long> {
+public class BriefingResultEntity extends BaseEntity<Long> {
 
     @Column(name = "total_questions")
     private Integer totalQuestions;

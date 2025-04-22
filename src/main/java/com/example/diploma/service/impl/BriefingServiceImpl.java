@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,17 +22,20 @@ public class BriefingServiceImpl implements BriefingService {
     private final BriefingMapper briefingMapper;
 
     @Override
+    @Transactional
     public Long create(CreateBriefingRequest createBriefing) {
         BriefingEntity briefingEntity = briefingMapper.toEntity(createBriefing);
         return briefingRepository.save(briefingEntity).getId();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<BriefingResponse> findAll(Pageable pageable) {
         return briefingRepository.findAll(pageable).map(briefingMapper::toResponse);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BriefingResponse findById(Long id) {
         BriefingEntity briefingEntity = getByIdOrThrow(id);
         return briefingMapper.toResponse(briefingEntity);

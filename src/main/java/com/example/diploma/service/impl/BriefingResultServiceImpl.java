@@ -4,7 +4,8 @@ import com.example.diploma.controller.request.briefingResult.CreateBriefingResul
 import com.example.diploma.controller.request.briefingResult.UpdateBriefingResultRequest;
 import com.example.diploma.controller.response.BriefingResultResponse;
 import com.example.diploma.entity.BriefingResultEntity;
-import com.example.diploma.exception.BriefingResultNotFoundException;
+import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.BriefingResultException;
 import com.example.diploma.mapper.BriefingResultMapper;
 import com.example.diploma.repository.jpa.BriefingResultRepository;
 import com.example.diploma.service.BriefingResultService;
@@ -55,7 +56,7 @@ public class BriefingResultServiceImpl implements BriefingResultService {
 
     private BriefingResultEntity getByIdOrThrow(Long id) {
         return briefingResultRepository.findById(id)
-                .orElseThrow(BriefingResultNotFoundException::new);
+                .orElseThrow(() -> new MyException(BriefingResultException.NOT_FOUND));
     }
 
 }

@@ -12,6 +12,10 @@ public interface UserService {
 
     Page<UserResponse> findAll(Pageable pageable);
 
+    void addRole(Long id, Long roleId);
+
+    void addPosition(Long id, Long positionId);
+
     UserResponse findById(Long id);
 
     void update(Long id, UpdateUserRequest updateUser);

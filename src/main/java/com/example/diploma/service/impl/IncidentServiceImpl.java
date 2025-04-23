@@ -4,7 +4,8 @@ import com.example.diploma.controller.request.incident.CreateIncidentRequest;
 import com.example.diploma.controller.request.incident.UpdateIncidentRequest;
 import com.example.diploma.controller.response.IncidentResponse;
 import com.example.diploma.entity.IncidentEntity;
-import com.example.diploma.exception.IncidentNotFoundException;
+import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.IncidentException;
 import com.example.diploma.mapper.IncidentMapper;
 import com.example.diploma.repository.jpa.IncidentRepository;
 import com.example.diploma.service.IncidentService;
@@ -55,7 +56,7 @@ public class IncidentServiceImpl implements IncidentService {
 
     private IncidentEntity getByIdOrThrow(Long id) {
         return incidentRepository.findById(id)
-                .orElseThrow(IncidentNotFoundException::new);
+                .orElseThrow(() -> new MyException(IncidentException.NOT_FOUND));
     }
 
 }

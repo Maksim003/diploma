@@ -4,7 +4,8 @@ import com.example.diploma.controller.request.answer.CreateAnswerRequest;
 import com.example.diploma.controller.request.answer.UpdateAnswerRequest;
 import com.example.diploma.controller.response.AnswerResponse;
 import com.example.diploma.entity.AnswerEntity;
-import com.example.diploma.exception.AnswerNotFoundException;
+import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.AnswerException;
 import com.example.diploma.mapper.AnswerMapper;
 import com.example.diploma.repository.jpa.AnswerRepository;
 import com.example.diploma.service.AnswerService;
@@ -54,7 +55,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     private AnswerEntity getByIdOrThrow(Long id) {
         return answerRepository.findById(id)
-                .orElseThrow(AnswerNotFoundException::new);
+                .orElseThrow(() -> new MyException(AnswerException.NOT_FOUND));
     }
 
 }

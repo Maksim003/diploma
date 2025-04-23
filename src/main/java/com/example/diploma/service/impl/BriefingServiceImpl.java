@@ -4,7 +4,8 @@ import com.example.diploma.controller.request.briefing.CreateBriefingRequest;
 import com.example.diploma.controller.request.briefing.UpdateBriefingRequest;
 import com.example.diploma.controller.response.BriefingResponse;
 import com.example.diploma.entity.BriefingEntity;
-import com.example.diploma.exception.BriefingNotFoundException;
+import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.BriefingException;
 import com.example.diploma.mapper.BriefingMapper;
 import com.example.diploma.repository.jpa.BriefingRepository;
 import com.example.diploma.service.BriefingService;
@@ -42,6 +43,11 @@ public class BriefingServiceImpl implements BriefingService {
     }
 
     @Override
+    public void addQuestion(Long id, Long questionId) {
+
+    }
+
+    @Override
     public void update(Long id, UpdateBriefingRequest updateBriefing) {
         BriefingEntity briefingEntity = getByIdOrThrow(id);
         briefingMapper.updateEntity(briefingEntity, updateBriefing);
@@ -53,9 +59,14 @@ public class BriefingServiceImpl implements BriefingService {
         briefingRepository.deleteById(id);
     }
 
+    @Override
+    public void deleteQuestion(Long id, Long questionId) {
+
+    }
+
     private BriefingEntity getByIdOrThrow(Long id) {
         return briefingRepository.findById(id)
-                .orElseThrow(BriefingNotFoundException::new);
+                .orElseThrow(() -> new MyException(BriefingException.NOT_FOUND));
     }
 
 }

@@ -5,7 +5,8 @@ import com.example.diploma.controller.request.vacation.CreateVacationRequest;
 import com.example.diploma.controller.request.vacation.UpdateVacationRequest;
 import com.example.diploma.controller.response.VacationResponse;
 import com.example.diploma.entity.VacationEntity;
-import com.example.diploma.exception.VacationNotFoundException;
+import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.VacationException;
 import com.example.diploma.mapper.VacationMapper;
 import com.example.diploma.repository.jpa.VacationRepository;
 import com.example.diploma.service.VacationService;
@@ -56,7 +57,7 @@ public class VacationServiceImpl implements VacationService {
 
     private VacationEntity getByIdOrThrow(Long id) {
         return vacationRepository.findById(id)
-                .orElseThrow(VacationNotFoundException::new);
+                .orElseThrow(() -> new MyException(VacationException.NOT_FOUND));
     }
 
 }

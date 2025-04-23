@@ -3,9 +3,16 @@ package com.example.diploma.service.impl;
 import com.example.diploma.controller.request.user.CreateUserRequest;
 import com.example.diploma.controller.request.user.UpdateUserRequest;
 import com.example.diploma.controller.response.UserResponse;
+import com.example.diploma.entity.PositionEntity;
+import com.example.diploma.entity.RoleEntity;
 import com.example.diploma.entity.UserEntity;
-import com.example.diploma.exception.UserNotFoundException;
+import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.PositionException;
+import com.example.diploma.exception.enums.RoleException;
+import com.example.diploma.exception.enums.UserException;
 import com.example.diploma.mapper.UserMapper;
+import com.example.diploma.repository.jpa.PositionRepository;
+import com.example.diploma.repository.jpa.RoleRepository;
 import com.example.diploma.repository.jpa.UserRepository;
 import com.example.diploma.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +27,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final RoleRepository roleRepository;
+    private final PositionRepository positionRepository;
 
     @Override
     @Transactional
@@ -32,6 +41,24 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public Page<UserResponse> findAll(Pageable pageable) {
         return userRepository.findAll(pageable).map(userMapper::toResponse);
+    }
+
+    @Override
+    @Transactional
+    public void addRole(Long id, Long roleId) {
+        UserEntity user = getByIdOrThrow(id);
+        RoleEntity roleEntity = getRoleByIdOrThrow(roleId);
+        user.setRole(roleEntity);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void addPosition(Long id, Long positionId) {
+        UserEntity user = getByIdOrThrow(id);
+        PositionEntity positionEntity = getPositionByIdOrThrow(positionId);
+        user.setPosition(positionEntity);
+        userRepository.save(user);
     }
 
     @Override
@@ -55,7 +82,17 @@ public class UserServiceImpl implements UserService {
 
     private UserEntity getByIdOrThrow(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new MyException(UserException.NOT_FOUND));
+    }
+
+    private RoleEntity getRoleByIdOrThrow(Long roleId) {
+        return roleRepository.findById(roleId)
+                .orElseThrow(() -> new MyException(RoleException.NOT_FOUND));
+    }
+
+    private PositionEntity getPositionByIdOrThrow(Long positionId) {
+        return positionRepository.findById(positionId)
+                .orElseThrow(() -> new MyException(PositionException.NOT_FOUND));
     }
 
 }

@@ -14,8 +14,12 @@ public interface QuestionService {
 
     QuestionResponse findById(Long id);
 
+    void addAnswer(Long id, Long answerId);
+
     void update(Long id, UpdateQuestionRequest updateQuestion);
 
     void delete(Long id);
+
+    void deleteAnswer(Long id, Long answerId);
 
 }

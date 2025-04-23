@@ -14,9 +14,12 @@ public interface BriefingService {
 
     BriefingResponse findById(Long id);
 
+    void addQuestion(Long id, Long questionId);
+
     void update(Long id, UpdateBriefingRequest updateBriefing);
 
     void delete(Long id);
 
+    void deleteQuestion(Long id, Long questionId);
 
 }

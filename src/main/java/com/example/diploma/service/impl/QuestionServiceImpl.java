@@ -4,7 +4,8 @@ import com.example.diploma.controller.request.question.CreateQuestionRequest;
 import com.example.diploma.controller.request.question.UpdateQuestionRequest;
 import com.example.diploma.controller.response.QuestionResponse;
 import com.example.diploma.entity.QuestionEntity;
-import com.example.diploma.exception.QuestionNotFoundException;
+import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.QuestionException;
 import com.example.diploma.mapper.QuestionMapper;
 import com.example.diploma.repository.jpa.QuestionRepository;
 import com.example.diploma.service.QuestionService;
@@ -41,6 +42,11 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public void addAnswer(Long id, Long answerId) {
+
+    }
+
+    @Override
     public void update(Long id, UpdateQuestionRequest updateQuestion) {
         QuestionEntity questionEntity = getByIdOrThrow(id);
         questionMapper.updateEntity(questionEntity, updateQuestion);
@@ -52,9 +58,14 @@ public class QuestionServiceImpl implements QuestionService {
         questionRepository.deleteById(id);
     }
 
+    @Override
+    public void deleteAnswer(Long id, Long answerId) {
+
+    }
+
     private QuestionEntity getByIdOrThrow(Long id) {
         return questionRepository.findById(id)
-                .orElseThrow(QuestionNotFoundException::new);
+                .orElseThrow(() -> new MyException(QuestionException.NOT_FOUND));
     }
 
 }

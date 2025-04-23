@@ -4,7 +4,8 @@ import com.example.diploma.controller.request.appeal.CreateAppealRequest;
 import com.example.diploma.controller.request.appeal.UpdateAppealRequest;
 import com.example.diploma.controller.response.AppealResponse;
 import com.example.diploma.entity.AppealEntity;
-import com.example.diploma.exception.AppealNotFoundException;
+import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.AppealException;
 import com.example.diploma.mapper.AppealMapper;
 import com.example.diploma.repository.jpa.AppealRepository;
 import com.example.diploma.service.AppealService;
@@ -55,7 +56,7 @@ public class AppealServiceImpl implements AppealService {
 
     private AppealEntity getByIdOrThrow(Long id) {
         return appealRepository.findById(id)
-                .orElseThrow(AppealNotFoundException::new);
+                .orElseThrow(() -> new MyException(AppealException.NOT_FOUND));
     }
 
 }

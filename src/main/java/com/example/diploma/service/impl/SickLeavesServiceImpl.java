@@ -4,7 +4,8 @@ import com.example.diploma.controller.request.sickLeaves.CreateSickLeavesRequest
 import com.example.diploma.controller.request.sickLeaves.UpdateSickLeavesRequest;
 import com.example.diploma.controller.response.SickLeavesResponse;
 import com.example.diploma.entity.SickLeavesEntity;
-import com.example.diploma.exception.SickLeavesNotFoundException;
+import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.SickLeavesException;
 import com.example.diploma.mapper.SickLeavesMapper;
 import com.example.diploma.repository.jpa.SickLeavesRepository;
 import com.example.diploma.service.SickLeavesService;
@@ -55,7 +56,7 @@ public class SickLeavesServiceImpl implements SickLeavesService {
 
     private SickLeavesEntity getByIdOrThrow(Long id) {
         return sickleavesRepository.findById(id)
-                .orElseThrow(SickLeavesNotFoundException::new);
+                .orElseThrow(() -> new MyException(SickLeavesException.NOT_FOUND));
     }
 
 }

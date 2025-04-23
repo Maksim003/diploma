@@ -4,7 +4,8 @@ import com.example.diploma.controller.request.department.CreateDepartmentRequest
 import com.example.diploma.controller.request.department.UpdateDepartmentRequest;
 import com.example.diploma.controller.response.DepartmentResponse;
 import com.example.diploma.entity.DepartmentEntity;
-import com.example.diploma.exception.DepartmentNotFoundException;
+import com.example.diploma.exception.enums.DepartmentException;
+import com.example.diploma.exception.MyException;
 import com.example.diploma.mapper.DepartmentMapper;
 import com.example.diploma.repository.jpa.DepartmentRepository;
 import com.example.diploma.service.DepartmentService;
@@ -56,6 +57,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private DepartmentEntity getByIdOrThrow(Long id) {
         return departmentRepository.findById(id)
-                .orElseThrow(DepartmentNotFoundException::new);
+                .orElseThrow(() -> new MyException(DepartmentException.NOT_FOUND));
     }
 }

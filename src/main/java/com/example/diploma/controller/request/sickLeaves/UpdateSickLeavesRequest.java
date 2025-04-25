@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record UpdateSickLeavesRequest(
-        @NotNull LocalDate startDate,
-        @NotNull LocalDate endDate,
+        @NotNull(message = "поле не должно быть пустым") LocalDate startDate,
+        @NotNull(message = "поле не должно быть пустым") LocalDate endDate,
         String documentNumber,
         String status
 ) {

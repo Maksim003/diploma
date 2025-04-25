@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record CreateVacationRequest(
-        @NotNull Long user,
-        @NotNull LocalDate startDate,
-        @NotNull LocalDate endDate,
+        @NotNull(message = "поле не должно быть пустым") Long user,
+        @NotNull(message = "поле не должно быть пустым") LocalDate startDate,
+        @NotNull(message = "поле не должно быть пустым") LocalDate endDate,
         String type,
         String status
 ) {

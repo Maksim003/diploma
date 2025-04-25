@@ -34,10 +34,22 @@ public class BriefingController {
         return briefingService.findById(id);
     }
 
+    @PutMapping("/{id}/question/{questionId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addQuestion(@PathVariable Long id, @PathVariable Long questionId) {
+        briefingService.addQuestion(id, questionId);
+    }
+
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable Long id, @RequestBody @Valid UpdateBriefingRequest updateBriefing) {
         briefingService.update(id, updateBriefing);
+    }
+
+    @DeleteMapping("/{id}/question/{questionId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteQuestion (@PathVariable Long id, @PathVariable Long questionId) {
+        briefingService.deleteQuestion(id, questionId);
     }
 
     @DeleteMapping("/{id}")

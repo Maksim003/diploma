@@ -4,10 +4,10 @@ import com.example.diploma.annotation.NullOrNotEmpty;
 import jakarta.validation.constraints.NotBlank;
 
 public record CreateUserRequest(
-        @NotBlank String name,
-        @NotBlank String surname,
+        @NotBlank(message = "поле не должно быть пустым") String name,
+        @NotBlank(message = "поле не должно быть пустым") String surname,
         @NullOrNotEmpty String patronymic,
-        @NotBlank String login,
-        @NotBlank String password
+        @NotBlank(message = "поле не должно быть пустым") String login,
+        @NotBlank(message = "поле не должно быть пустым") String password
 ) {
 }

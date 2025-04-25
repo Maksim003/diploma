@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public record CreateIncidentRequest(
-        @NotNull Long user,
-        @NotNull LocalDateTime date,
+        @NotNull(message = "поле не должно быть пустым") Long user,
+        @NotNull(message = "поле не должно быть пустым") LocalDateTime date,
         String type,
         String description,
         String status

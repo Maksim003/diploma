@@ -34,10 +34,22 @@ public class QuestionController {
         return questionService.findById(id);
     }
 
+    @PutMapping("/{id}/answer/{answerId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addAnswer(@PathVariable Long id, @PathVariable Long answerId) {
+        questionService.addAnswer(id, answerId);
+    }
+
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable Long id, @RequestBody @Valid UpdateQuestionRequest updateQuestion) {
         questionService.update(id, updateQuestion);
+    }
+
+    @PutMapping("/{id}/answer/{answerId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAnswer(@PathVariable Long id, @PathVariable Long answerId) {
+        questionService.deleteAnswer(id, answerId);
     }
 
     @DeleteMapping("/{id}")

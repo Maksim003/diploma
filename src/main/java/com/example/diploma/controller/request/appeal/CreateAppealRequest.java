@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record CreateAppealRequest(
-        @NotNull Long user,
+        @NotNull(message = "поле не должно быть пустым") Long user,
         @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
         String subject,
         String description

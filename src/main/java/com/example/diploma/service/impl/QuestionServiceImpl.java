@@ -3,10 +3,13 @@ package com.example.diploma.service.impl;
 import com.example.diploma.controller.request.question.CreateQuestionRequest;
 import com.example.diploma.controller.request.question.UpdateQuestionRequest;
 import com.example.diploma.controller.response.QuestionResponse;
+import com.example.diploma.entity.AnswerEntity;
 import com.example.diploma.entity.QuestionEntity;
 import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.AnswerException;
 import com.example.diploma.exception.enums.QuestionException;
 import com.example.diploma.mapper.QuestionMapper;
+import com.example.diploma.repository.jpa.AnswerRepository;
 import com.example.diploma.repository.jpa.QuestionRepository;
 import com.example.diploma.service.QuestionService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionRepository questionRepository;
     private final QuestionMapper questionMapper;
+    private final AnswerRepository answerRepository;
 
     @Override
     public Long create(CreateQuestionRequest createQuestion) {
@@ -43,7 +47,10 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public void addAnswer(Long id, Long answerId) {
-
+        QuestionEntity questionEntity = getByIdOrThrow(id);
+        AnswerEntity answerEntity = getAnswerByIdOrThrow(answerId);
+        questionEntity.getAnswers().add(answerEntity);
+        questionRepository.save(questionEntity);
     }
 
     @Override
@@ -60,12 +67,20 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public void deleteAnswer(Long id, Long answerId) {
-
+        QuestionEntity questionEntity = getByIdOrThrow(id);
+        AnswerEntity answerEntity = getAnswerByIdOrThrow(answerId);
+        questionEntity.getAnswers().remove(answerEntity);
+        questionRepository.save(questionEntity);
     }
 
     private QuestionEntity getByIdOrThrow(Long id) {
         return questionRepository.findById(id)
                 .orElseThrow(() -> new MyException(QuestionException.NOT_FOUND));
+    }
+
+    private AnswerEntity getAnswerByIdOrThrow(Long id) {
+        return answerRepository.findById(id)
+                .orElseThrow(() -> new MyException(AnswerException.NOT_FOUND));
     }
 
 }

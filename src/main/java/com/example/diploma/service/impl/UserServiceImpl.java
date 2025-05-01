@@ -18,6 +18,8 @@ import com.example.diploma.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +31,16 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final PositionRepository positionRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    @Transactional
     public Long create(CreateUserRequest createUser) {
         UserEntity userEntity = userMapper.toEntity(createUser);
+
+        String unencryptedPassword = userEntity.getPassword();
+        String encryptedPassword = passwordEncoder.encode(unencryptedPassword);
+        userEntity.setPassword(encryptedPassword);
+
         return userRepository.save(userEntity).getId();
     }
 
@@ -41,6 +48,13 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public Page<UserResponse> findAll(Pageable pageable) {
         return userRepository.findAll(pageable).map(userMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserEntity findByLoginOrThrow(String username) throws UsernameNotFoundException {
+        return userRepository.findByLogin(username)
+                .orElseThrow(() -> new UsernameNotFoundException("No user found with username " + username));
     }
 
     @Override
@@ -77,6 +91,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
+        UserEntity user = getByIdOrThrow(id);
+        if (user.getName().equalsIgnoreCase("admin") && user.getSurname().equalsIgnoreCase("admin")
+        && user.getLogin().equalsIgnoreCase("admin")) {
+            throw new MyException(UserException.FORBIDDEN_DELETE);
+        }
         userRepository.deleteById(id);
     }
 

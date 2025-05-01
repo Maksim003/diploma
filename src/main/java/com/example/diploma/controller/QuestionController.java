@@ -46,7 +46,7 @@ public class QuestionController {
         questionService.update(id, updateQuestion);
     }
 
-    @PutMapping("/{id}/answer/{answerId}")
+    @DeleteMapping("/{id}/answer/{answerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAnswer(@PathVariable Long id, @PathVariable Long answerId) {
         questionService.deleteAnswer(id, answerId);

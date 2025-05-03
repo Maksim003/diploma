@@ -14,6 +14,8 @@ public interface VacationService {
 
     VacationResponse findById(Long id);
 
+    Long countActive();
+
     void update(Long id, UpdateVacationRequest updateVacation);
 
     void delete(Long id);

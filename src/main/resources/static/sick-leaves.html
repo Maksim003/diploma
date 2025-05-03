@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учёт больничных листов</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/sick-leaves.css">
+</head>
+<body>
+<div class="container py-4">
+    <h1 class="mb-4"><i class="bi bi-file-medical"></i> Учёт больничных листов</h1>
+
+    <!-- Фильтры -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Отдел</label>
+                    <select id="department-filter" class="form-select">
+                        <option value="">Все отделы</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Период</label>
+                    <input type="month" id="month-filter" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Статус</label>
+                    <select id="status-filter" class="form-select">
+                        <option value="">Все</option>
+                        <option value="ACTIVE">Активный</option>
+                        <option value="CLOSED">Закрыт</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопки админа -->
+    <div id="admin-actions" class="mb-3" style="display: none;">
+        <button id="add-sick-leave-btn" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Добавить больничный
+        </button>
+    </div>
+
+    <!-- Таблица -->
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+            <tr>
+                <th>Сотрудник</th>
+                <th>Отдел</th>
+                <th>Дата начала</th>
+                <th>Дата окончания</th>
+                <th>Номер документа</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody id="sick-leaves-table">
+            <!-- Данные будут загружены через JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Модальное окно добавления -->
+<div class="modal fade" id="sickLeaveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить больничный лист</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="sick-leave-form">
+                    <div class="mb-3">
+                        <label class="form-label">Сотрудник*</label>
+                        <select id="employee-select" class="form-select" required>
+                            <option value="">Выберите сотрудника</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Дата начала*</label>
+                        <input type="date" id="start-date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Дата окончания*</label>
+                        <input type="date" id="end-date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Номер документа</label>
+                        <input type="text" id="document-number" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="save-sick-leave">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/sick-leaves.js"></script>
+</body>
+</html>

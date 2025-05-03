@@ -14,6 +14,8 @@ public interface IncidentService {
 
     IncidentResponse findById(Long id);
 
+    Long countAllToday();
+
     void update(Long id, UpdateIncidentRequest updateIncident);
 
     void delete(Long id);

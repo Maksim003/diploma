@@ -6,6 +6,12 @@ meta {
 
 post {
   url: {{path}}/refresh
-  body: none
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0NjI4NzE1OSwiZXhwIjoyMjU2OTUwODcxNTl9.4CwZNTBhhEsHBV66d8g1KQUTLoz_9uq_svKyaCw1TnE"
+  }
 }

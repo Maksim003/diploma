@@ -14,6 +14,8 @@ public interface AppealService {
 
     AppealResponse findById(Long id);
 
+    Long countTodayAppeal();
+
     void update(Long id, UpdateAppealRequest updateAppeal);
 
     void delete(Long id);

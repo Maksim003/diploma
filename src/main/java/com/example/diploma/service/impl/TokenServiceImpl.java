@@ -1,10 +1,11 @@
-package com.example.diploma.service;
+package com.example.diploma.service.impl;
 
 import com.example.diploma.controller.response.TokenResponse;
 import com.example.diploma.entity.redisEntity.AccessTokenEntity;
 import com.example.diploma.entity.redisEntity.RefreshTokenEntity;
 import com.example.diploma.repository.redis.AccessTokenRepository;
 import com.example.diploma.repository.redis.RefreshTokenRepository;
+import com.example.diploma.service.TokenService;
 import com.example.diploma.util.JwtUtil;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;

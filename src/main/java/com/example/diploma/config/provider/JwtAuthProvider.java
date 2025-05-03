@@ -4,7 +4,6 @@ import com.example.diploma.config.token.JwtAuthToken;
 import com.example.diploma.exception.InvalidJwtTokenException;
 import com.example.diploma.service.TokenService;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;

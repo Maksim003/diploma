@@ -51,7 +51,8 @@ public class UserMapper {
                 userEntity.getLogin(),
                 userEntity.getPassword(),
                 userEntity.getName(),
-                userEntity.getSurname()
+                userEntity.getSurname(),
+                userEntity.getPatronymic()
         );
     }
 

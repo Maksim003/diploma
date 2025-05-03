@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class VacationServiceImpl implements VacationService {
@@ -41,6 +43,11 @@ public class VacationServiceImpl implements VacationService {
     public VacationResponse findById(Long id) {
         VacationEntity vacationEntity = getByIdOrThrow(id);
         return vacationMapper.toResponse(vacationEntity);
+    }
+
+    @Override
+    public Long countActive() {
+        return vacationRepository.countActiveOnDate(LocalDate.now());
     }
 
     @Override

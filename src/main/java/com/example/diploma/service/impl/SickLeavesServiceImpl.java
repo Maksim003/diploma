@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class SickLeavesServiceImpl implements SickLeavesService {
@@ -40,6 +42,11 @@ public class SickLeavesServiceImpl implements SickLeavesService {
     public SickLeavesResponse findById(Long id) {
         SickLeavesEntity sickLeavesEntity = getByIdOrThrow(id);
         return sickLeavesMapper.toResponse(sickLeavesEntity);
+    }
+
+    @Override
+    public Long countActive() {
+        return sickleavesRepository.countActiveOnDate(LocalDate.now());
     }
 
     @Override

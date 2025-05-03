@@ -2,6 +2,7 @@ package com.example.diploma.service.impl;
 
 import com.example.diploma.controller.request.user.CreateUserRequest;
 import com.example.diploma.controller.request.user.UpdateUserRequest;
+import com.example.diploma.controller.response.FullnameResponse;
 import com.example.diploma.controller.response.UserResponse;
 import com.example.diploma.entity.PositionEntity;
 import com.example.diploma.entity.RoleEntity;
@@ -10,6 +11,7 @@ import com.example.diploma.exception.MyException;
 import com.example.diploma.exception.enums.PositionException;
 import com.example.diploma.exception.enums.RoleException;
 import com.example.diploma.exception.enums.UserException;
+import com.example.diploma.mapper.FullnameMapper;
 import com.example.diploma.mapper.UserMapper;
 import com.example.diploma.repository.jpa.PositionRepository;
 import com.example.diploma.repository.jpa.RoleRepository;
@@ -23,6 +25,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -32,14 +36,21 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PositionRepository positionRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FullnameMapper fullnameMapper;
 
     @Override
+    @Transactional
     public Long create(CreateUserRequest createUser) {
         UserEntity userEntity = userMapper.toEntity(createUser);
 
         String unencryptedPassword = userEntity.getPassword();
         String encryptedPassword = passwordEncoder.encode(unencryptedPassword);
         userEntity.setPassword(encryptedPassword);
+
+        if (userEntity.getRole() == null) {
+            RoleEntity roleEntity = roleRepository.findByName("USER");
+            userEntity.setRole(roleEntity);
+        }
 
         return userRepository.save(userEntity).getId();
     }
@@ -55,6 +66,17 @@ public class UserServiceImpl implements UserService {
     public UserEntity findByLoginOrThrow(String username) throws UsernameNotFoundException {
         return userRepository.findByLogin(username)
                 .orElseThrow(() -> new UsernameNotFoundException("No user found with username " + username));
+    }
+
+    @Override
+    public List<FullnameResponse> findByDepartment(Long departmentId) {
+        return userRepository.findByDepartment_Id(departmentId)
+                .stream().map(fullnameMapper::toResponse).toList();
+    }
+
+    @Override
+    public Long countUsers() {
+        return userRepository.count() - 1;
     }
 
     @Override

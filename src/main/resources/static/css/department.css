@@ -1,0 +1,51 @@
+#departments-list .list-group-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#departments-list .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+#departments-list .list-group-item.active {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+#employees-list .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.employee-actions {
+    visibility: hidden;
+}
+
+#employees-list .list-group-item:hover .employee-actions {
+    visibility: visible;
+}
+
+/* Добавляем в departments.css */
+.users-list-container {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+
+#users-list .list-group-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#users-list .list-group-item:hover:not(.active) {
+    background-color: #f8f9fa;
+}
+
+#users-list .list-group-item.active {
+    background-color: #0d6efd;
+    color: white;
+}
+
+#users-list .text-muted {
+    opacity: 0.8;
+}

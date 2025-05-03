@@ -16,11 +16,12 @@ import java.util.Collections;
 @AllArgsConstructor
 public class MyUserDetails implements UserDetails {
 
-    private GrantedAuthority authority;  // Одна роль вместо списка
+    private GrantedAuthority authority;
     private String username;
     private String password;
     private String name;
     private String surname;
+    private String patronymic;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,0 +1,70 @@
+/* incidents.css */
+/* Основные стили */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+/* Заголовок */
+.page-title {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+/* Таблица */
+.table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+/* Бейджи статусов */
+.badge {
+    padding: 0.35em 0.65em;
+    font-size: 0.875em;
+    border-radius: 4px;
+}
+
+.bg-primary {
+    background-color: #e3f2fd !important;
+    color: #0d47a1 !important;
+}
+
+.bg-warning {
+    background-color: #fff8e1 !important;
+    color: #ff6f00 !important;
+}
+
+.bg-success {
+    background-color: #e8f5e9 !important;
+    color: #2e7d32 !important;
+}
+
+/* Форма */
+.form-control, .form-select {
+    border: 1px solid #e0e0e0;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .table-responsive {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
+}

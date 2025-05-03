@@ -15,6 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AppealServiceImpl implements AppealService {
@@ -41,6 +44,14 @@ public class AppealServiceImpl implements AppealService {
         AppealEntity appealEntity = getByIdOrThrow(id);
         return appealMapper.toResponse(appealEntity);
     }
+
+    @Override
+    public Long countTodayAppeal() {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        return appealRepository.countAllByDateBetween(startOfDay, endOfDay);
+    }
+
 
     @Override
     public void update(Long id, UpdateAppealRequest updateAppeal) {

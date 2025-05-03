@@ -47,6 +47,11 @@ public class BriefingServiceImpl implements BriefingService {
     }
 
     @Override
+    public Long countAll() {
+        return briefingRepository.count();
+    }
+
+    @Override
     public void addQuestion(Long id, Long questionId) {
         BriefingEntity briefingEntity = getByIdOrThrow(id);
         QuestionEntity questionEntity = getQuestionByIdOrThrow(questionId);

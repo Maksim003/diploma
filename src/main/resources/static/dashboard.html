@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная - HR система</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Шапка -->
+    <header class="dashboard-header">
+        <h1>Добро пожаловать, <span id="current-user"></span>!</h1>
+        <button id="logout-btn" class="logout-btn">Выйти</button>
+    </header>
+
+    <!-- Блок с карточками-модулями -->
+    <div class="modules-grid">
+        <!-- Карточка "Сотрудники" -->
+        <div class="module-card" onclick="location.href='/employees.html'">
+            <h2>Сотрудники</h2>
+            <p>Управление персоналом</p>
+            <div class="stats">Всего: <span id="employees-count">0</span></div>
+        </div>
+
+        <!-- Карточка "Инструктажи" -->
+        <div class="module-card" onclick="location.href='/trainings.html'">
+            <h2>Инструктажи</h2>
+            <p>Охрана труда</p>
+            <div class="stats">Всего: <span id="briefings-count">0</span></div>
+        </div>
+
+        <!-- Карточка "Обращения" -->
+        <div class="module-card" onclick="location.href='/requests.html'">
+            <h2>Обращения</h2>
+            <p>Запросы сотрудников</p>
+            <div class="stats">Новые: <span id="appeals-count">0</span></div>
+        </div>
+
+        <div class="module-card" onclick="location.href='/vacation.html'">
+            <h3>Отпуска</h3>
+            <p>Учёт дней отпуска</p>
+            <div class="stats">
+                Активные: <span id="active-vacations">0</span>
+            </div>
+        </div>
+
+        <div class="module-card" onclick="location.href='/sick-leaves.html'">
+            <h3>Больничные</h3>
+            <p>Учёт больничных листов</p>
+            <div class="stats">
+                Открытые: <span id="active-sick-leaves">0</span>
+            </div>
+        </div>
+
+        <div class="module-card" onclick="location.href='/incident.html'">
+            <h2>Инциденты</h2>
+            <p>Учёт несчастных случаев</p>
+            <div class="stats">Активные: <span id="active-incidents">0</span></div>
+        </div>
+
+    </div>
+</div>
+
+<script type="module" src="/js/dashboard.js"></script>
+</body>
+</html>

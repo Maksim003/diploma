@@ -43,14 +43,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            JwtAuthFilter jwtAuthFilter,
-                                           MyBasicAuthFilter myBasicAuthFilter,
-                                           RefreshFilter refreshFilter,
+                                           MyBasicAuthFilter customBasicAuthFilter,
+                                           RefreshFilter refreshJwtFilter,
                                            JwtLogoutHandler jwtLogoutHandler) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                         authorize.requestMatchers(SecurityUtil.AUTH_PATH).permitAll()
                                 .requestMatchers(SecurityUtil.REFRESH_PATH).permitAll()
                                 .requestMatchers("/error").permitAll()
+                          //      .requestMatchers("/**").authenticated()
                                 .requestMatchers("/**").permitAll()
                                 .anyRequest().authenticated())
                 .logout(logout ->
@@ -62,10 +63,9 @@ public class SecurityConfig {
                                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                                 .accessDeniedHandler(new AccessDeniedHandlerImpl()))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(refreshFilter, JwtAuthFilter.class)
-                .addFilterAfter(myBasicAuthFilter, jwtAuthFilter.getClass());
+                .addFilterBefore(refreshJwtFilter, JwtAuthFilter.class)
+                .addFilterAfter(customBasicAuthFilter, jwtAuthFilter.getClass());
         return http.build();
     }
 
 }
-

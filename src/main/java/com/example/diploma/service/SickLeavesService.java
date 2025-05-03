@@ -14,6 +14,8 @@ public interface SickLeavesService {
 
     SickLeavesResponse findById(Long id);
 
+    Long countActive();
+
     void update(Long id, UpdateSickLeavesRequest updateSickLeaves);
 
     void delete(Long id);

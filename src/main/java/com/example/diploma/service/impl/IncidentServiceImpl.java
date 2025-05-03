@@ -15,6 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class IncidentServiceImpl implements IncidentService {
@@ -40,6 +43,13 @@ public class IncidentServiceImpl implements IncidentService {
     public IncidentResponse findById(Long id) {
         IncidentEntity incidentEntity = getByIdOrThrow(id);
         return incidentMapper.toResponse(incidentEntity);
+    }
+
+    @Override
+    public Long countAllToday() {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        return incidentRepository.countAllByDateBetween(startOfDay, endOfDay);
     }
 
     @Override

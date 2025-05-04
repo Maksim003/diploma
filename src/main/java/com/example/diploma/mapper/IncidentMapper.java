@@ -34,6 +34,7 @@ public class IncidentMapper {
 
     public IncidentResponse toResponse(IncidentEntity incidentEntity) {
         return new IncidentResponse(
+                incidentEntity.getId(),
                 fullnameMapper.toResponse(incidentEntity.getUser()),
                 incidentEntity.getDate(),
                 incidentEntity.getType(),

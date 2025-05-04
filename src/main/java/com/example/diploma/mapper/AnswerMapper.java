@@ -25,6 +25,7 @@ public class AnswerMapper {
 
     public AnswerResponse toResponse(AnswerEntity answerEntity) {
         return new AnswerResponse(
+                answerEntity.getId(),
                 answerEntity.getName(),
                 answerEntity.getIsCorrect()
         );

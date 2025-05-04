@@ -31,6 +31,7 @@ public class AppealMapper {
 
     public AppealResponse toResponse(AppealEntity appealEntity) {
         return new AppealResponse(
+                appealEntity.getId(),
                 fullnameMapper.toResponse(appealEntity.getCreator()),
                 appealEntity.getDate(),
                 appealEntity.getSubject(),

@@ -34,6 +34,7 @@ public class SickLeavesMapper {
 
     public SickLeavesResponse toResponse(SickLeavesEntity sickLeavesEntity) {
         return new SickLeavesResponse(
+                sickLeavesEntity.getId(),
                 fullnameMapper.toResponse(sickLeavesEntity.getUser()),
                 sickLeavesEntity.getStartDate(),
                 sickLeavesEntity.getEndDate(),

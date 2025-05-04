@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/departments")
 @RequiredArgsConstructor
@@ -25,8 +27,8 @@ public class DepartmentController {
     }
 
     @GetMapping
-    public Page<DepartmentResponse> findAll(Pageable pageable) {
-        return departmentService.findAll(pageable);
+    public List<DepartmentResponse> findAll() {
+        return departmentService.findAll();
     }
 
     @GetMapping("/{id}")

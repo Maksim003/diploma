@@ -1,33 +1,42 @@
-document.addEventListener('DOMContentLoaded', async function() {
-    // Общие переменные
-    const token = localStorage.getItem('jwtToken');
+import {fetchWithAuth} from './auth.js';
+
+document.addEventListener('DOMContentLoaded', async function () {
+    const accessToken = localStorage.getItem('accessToken');
     let allUsers = [];
     let selectedHead = null;
+    let selectedEmployee = null;
     let currentUser = null;
+    let currentDepartmentId = null;
 
-    // Проверка авторизации
-    if (!token) {
+    if (!accessToken) {
         window.location.href = '/login.html';
         return;
     }
 
-    // Загрузка текущего пользователя
-    currentUser = await fetchCurrentUser();
-    if (currentUser.roles.includes('ADMIN') || currentUser.roles.includes('HR')) {
+    document.getElementById('back-to-dashboard').addEventListener('click', () => {
+        window.location.href = '/dashboard.html';
+    });
+
+    await fetchWithAuth(); // проверка токена
+
+    currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser) {
+        await loadCurrentUser();
+        currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    }
+
+    if (currentUser.role.includes('ADMIN') || currentUser.role.includes('HR')) {
         document.getElementById('admin-actions').style.display = 'block';
     }
 
-    // Загрузка отделов
     await loadDepartments();
 
-    // Обработчики модального окна
     const addDepartmentModal = document.getElementById('addDepartmentModal');
     addDepartmentModal.addEventListener('show.bs.modal', async () => {
         await loadAllUsers();
         renderUsersList(allUsers);
     });
 
-    // Кнопки
     document.getElementById('add-department-btn').addEventListener('click', () => {
         new bootstrap.Modal(addDepartmentModal).show();
     });
@@ -35,7 +44,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('save-department').addEventListener('click', saveDepartment);
     document.getElementById('clear-search').addEventListener('click', clearSearch);
 
-    // Поиск пользователей
     document.getElementById('head-search').addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
         const filtered = allUsers.filter(user =>
@@ -45,21 +53,49 @@ document.addEventListener('DOMContentLoaded', async function() {
         renderUsersList(filtered);
     });
 
-    // ======= ФУНКЦИИ =======
+    document.getElementById('clear-employee-search').addEventListener('click', clearEmpSearch);
 
-    async function fetchCurrentUser() {
-        const response = await fetch('/api/auth/current-user', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        return await response.json();
+    document.getElementById('employee-search').addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filtered = allUsers.filter(user =>
+            user.fullName.toLowerCase().includes(searchTerm) ||
+            (user.position && user.position.toLowerCase().includes(searchTerm))
+        );
+        renderEmployeeList(filtered);
+    });
+
+    document.getElementById('add-employee').addEventListener('click', saveEmployeeToDepartment);
+
+    async function loadCurrentUser() {
+        try {
+            await fetchWithAuth();
+            const res = await fetch('http://127.0.0.1:8080/users/current-user', {
+                headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`}
+            });
+            const user = await res.json();
+            localStorage.setItem('currentUser', JSON.stringify(user));
+        } catch (error) {
+            console.error('Ошибка загрузки пользователя:', error);
+        }
     }
 
     async function loadDepartments() {
         try {
-            const response = await fetch('/api/departments', {
-                headers: { 'Authorization': `Bearer ${token}` }
+            await fetchWithAuth();
+            const response = await fetch('http://127.0.0.1:8080/departments', {
+                headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`}
             });
-            const departments = await response.json();
+            let departments = await response.json();
+
+            if (!currentUser.role.includes('ADMIN') && !currentUser.role.includes('HR')) {
+                const userDeptId = currentUser.departmentId;
+                const userDeptIndex = departments.findIndex(dept => dept.id === userDeptId);
+
+                if (userDeptIndex > -1) {
+                    const [userDept] = departments.splice(userDeptIndex, 1);
+                    departments.unshift(userDept);
+                }
+            }
 
             const list = document.getElementById('departments-list');
             list.innerHTML = '';
@@ -67,6 +103,11 @@ document.addEventListener('DOMContentLoaded', async function() {
             departments.forEach(dept => {
                 const item = document.createElement('button');
                 item.className = 'list-group-item list-group-item-action';
+
+                if (dept.id === currentUser.departmentId) {
+                    item.classList.add('active-user-department');
+                }
+
                 item.textContent = dept.name;
                 item.addEventListener('click', () => showDepartmentDetails(dept));
                 list.appendChild(item);
@@ -80,44 +121,43 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    async function showDepartmentDetails(department) {
-        document.getElementById('department-name').textContent = department.name;
-        document.getElementById('department-description').textContent = department.description || 'Нет описания';
-        document.getElementById('department-details').style.display = 'block';
-
-        // Загружаем сотрудников отдела
-        const response = await fetch(`/api/departments/${department.id}/employees`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const employees = await response.json();
-
-        const list = document.getElementById('employees-list');
-        list.innerHTML = '';
-
-        employees.forEach(emp => {
-            const item = document.createElement('li');
-            item.className = 'list-group-item';
-            item.innerHTML = `
-                <div>
-                    <strong>${emp.fullName}</strong>
-                    <div class="text-muted small">${emp.position || 'Должность не указана'}</div>
-                </div>
-                <div class="employee-actions">
-                    <button class="btn btn-sm btn-outline-secondary">Профиль</button>
-                </div>
-            `;
-            list.appendChild(item);
-        });
-    }
-
     async function loadAllUsers() {
         try {
-            const response = await fetch('/api/users', {
-                headers: { 'Authorization': `Bearer ${token}` }
+            await fetchWithAuth();
+            const response = await fetch('http://127.0.0.1:8080/users', {
+                headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`}
             });
             allUsers = await response.json();
         } catch (error) {
             console.error('Ошибка загрузки пользователей:', error);
+        }
+    }
+
+    async function saveDepartment() {
+        const form = document.getElementById('department-form');
+        const formData = {
+            name: form.elements['name'].value,
+            head: selectedHead?.id || null
+        };
+
+        try {
+            await fetchWithAuth();
+            const response = await fetch('http://127.0.0.1:8080/departments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) throw new Error('Ошибка сохранения');
+
+            bootstrap.Modal.getInstance(document.getElementById('addDepartmentModal')).hide();
+            await loadDepartments();
+            resetForm();
+        } catch (error) {
+            alert(error.message);
         }
     }
 
@@ -154,32 +194,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         selectedHead = null;
     }
 
-    async function saveDepartment() {
-        const form = document.getElementById('department-form');
-        const formData = {
-            name: form.elements['name'].value,
-            description: '', // Добавьте поле description в форму если нужно
-            headId: selectedHead?.id || null
-        };
-
-        try {
-            const response = await fetch('/api/departments', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
-
-            if (!response.ok) throw new Error('Ошибка сохранения');
-
-            bootstrap.Modal.getInstance(addDepartmentModal).hide();
-            await loadDepartments();
-            resetForm();
-        } catch (error) {
-            alert(error.message);
-        }
+    function clearEmpSearch() {
+        document.getElementById('employee-search').value = '';
+        renderEmployeeList(allUsers);
+        selectedEmployee = null;
     }
 
     function resetForm() {
@@ -187,4 +205,178 @@ document.addEventListener('DOMContentLoaded', async function() {
         selectedHead = null;
         document.getElementById('head-search').value = '';
     }
+
+    function showAddEmployeeModal(deptId) {
+        currentDepartmentId = deptId;
+        loadUsersWithoutDep().then(() => {
+            renderEmployeeList(allUsers);
+            document.getElementById('employee-search').value = '';
+            selectedEmployee = null;
+            new bootstrap.Modal(document.getElementById('addEmployeeModal')).show();
+        });
+    }
+
+    window.removeEmployee = async function (userId, deptId) {
+        if (!confirm('Вы уверены, что хотите удалить этого сотрудника из отдела?')) return;
+
+        try {
+            await fetchWithAuth();
+            const response = await fetch(`http://127.0.0.1:8080/users/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Не удалось удалить сотрудника');
+            }
+
+            await showDepartmentDetails({id: deptId, name: document.getElementById('department-name').textContent});
+        } catch (error) {
+            alert('Ошибка при удалении сотрудника: ' + error.message);
+        }
+    }
+
+    async function showDepartmentDetails(department) {
+        document.getElementById('department-name').textContent = department.name;
+        document.getElementById('department-details').style.display = 'block';
+
+        const list = document.getElementById('departments-list');
+        const allItems = list.getElementsByClassName('list-group-item');
+
+        Array.from(allItems).forEach(item => item.classList.remove('active-user-department'));
+
+        const departmentItem = Array.from(allItems).find(item => item.textContent === department.name);
+        if (departmentItem) {
+            departmentItem.classList.add('active-user-department');
+        }
+
+        const isAdminOrHR = currentUser.role.includes('ADMIN') || currentUser.role.includes('HR');
+        const isOwnDepartmentHead = currentUser.role.includes('HEAD') && currentUser.departmentId === department.id;
+
+        const addBtn = document.getElementById('add-employee-btn');
+        if (addBtn) {
+            if (isAdminOrHR || isOwnDepartmentHead) {
+                addBtn.style.display = 'inline-block';
+                addBtn.onclick = () => showAddEmployeeModal(department.id);
+            } else {
+                addBtn.style.display = 'none';
+            }
+        }
+
+        await fetchWithAuth();
+        const response = await fetch(`http://127.0.0.1:8080/users/${department.id}/department`, {
+            headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`},
+        });
+        const employees = await response.json();
+
+        const headOfDepartment = employees.find(emp => emp.id === department.head);
+        if (headOfDepartment) {
+            employees.sort((a, b) => a.id === headOfDepartment.id ? -1 : 1);
+        }
+
+        const employeesList = document.getElementById('employees-list');
+        employeesList.innerHTML = '';
+
+        employees.forEach(emp => {
+            const item = document.createElement('li');
+            item.className = 'list-group-item';
+
+            const nameElement = document.createElement('span');
+            nameElement.textContent = emp.fullName;
+            if (emp.id === currentUser.id) {
+                nameElement.classList.add('current-user-highlight-green');
+            }
+
+            const positionElement = document.createElement('div');
+            positionElement.className = 'text-muted small';
+            positionElement.textContent = emp.position || 'Должность не указана';
+
+            item.appendChild(nameElement);
+            item.appendChild(positionElement);
+
+            if ((isAdminOrHR || (isOwnDepartmentHead && emp.departmentId === department.id)) && emp.id !== currentUser.id) {
+                const removeButton = document.createElement('button');
+                removeButton.className = 'btn btn-sm btn-danger float-end';
+                removeButton.textContent = 'Удалить';
+                removeButton.onclick = () => removeEmployee(emp.id, department.id);
+                item.appendChild(removeButton);
+            }
+
+            employeesList.appendChild(item);
+        });
+    }
+
+    async function loadUsersWithoutDep() {
+        try {
+            const response = await fetch('http://127.0.0.1:8080/users/department', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Не удалось загрузить пользователей');
+            }
+
+            allUsers = await response.json();
+
+        } catch (error) {
+            console.error('Ошибка загрузки пользователей:', error);
+        }
+    }
+
+    function renderEmployeeList(users) {
+        const list = document.getElementById('employee-users-list');
+        list.innerHTML = '';
+
+        users.forEach(user => {
+            const li = document.createElement('li');
+            li.className = `list-group-item ${selectedEmployee?.id === user.id ? 'active' : ''}`;
+            li.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>${user.fullName}</strong>
+                    <div class="text-muted small">${user.position || 'Должность не указана'}</div>
+                </div>
+                ${selectedEmployee?.id === user.id ? '<i class="bi bi-check-lg"></i>' : ''}
+            </div>
+        `;
+
+            li.addEventListener('click', () => {
+                selectedEmployee = user;
+                renderEmployeeList(users);
+                document.getElementById('employee-search').value = user.fullName;
+            });
+
+            list.appendChild(li);
+        });
+    }
+
+    async function saveEmployeeToDepartment() {
+        if (!selectedEmployee || !currentDepartmentId) {
+            alert('Выберите сотрудника и убедитесь, что выбран отдел');
+            return;
+        }
+
+        try {
+            await fetchWithAuth();
+            const response = await fetch(`http://127.0.0.1:8080/users/${selectedEmployee.id}/assign-department/${currentDepartmentId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+
+            if (!response.ok) throw new Error('Не удалось добавить сотрудника');
+
+            bootstrap.Modal.getInstance(document.getElementById('addEmployeeModal')).hide();
+            await showDepartmentDetails({ id: currentDepartmentId, name: document.getElementById('department-name').textContent });
+        } catch (error) {
+            alert('Ошибка при добавлении сотрудника: ' + error.message);
+        }
+    }
+
 });
+

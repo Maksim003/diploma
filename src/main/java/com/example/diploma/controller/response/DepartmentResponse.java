@@ -5,8 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 public record DepartmentResponse(
+        Long id,
         @NotBlank String name,
-        FullnameResponse head,
+        Long head,
         List<FullnameResponse> members
 ) {
 }

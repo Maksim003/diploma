@@ -1,3 +1,72 @@
+/*#departments-list .list-group-item {*/
+/*    cursor: pointer;*/
+/*    transition: background-color 0.2s;*/
+/*}*/
+
+/*#departments-list .list-group-item:hover {*/
+/*    background-color: #f8f9fa;*/
+/*}*/
+
+/*.back-to-dashboard {*/
+/*    background-color: #e74c3c;*/
+/*    color: white;*/
+/*    border: none;*/
+/*    padding: 8px 16px;*/
+/*    border-radius: 4px;*/
+/*    cursor: pointer;*/
+/*    position: absolute; !* или fixed, если нужно чтобы кнопка оставалась при прокрутке *!*/
+/*    top: 20px;*/
+/*    right: 20px;*/
+/*    z-index: 1000; !* чтобы кнопка была поверх других элементов *!*/
+/*}*/
+
+/*#departments-list .list-group-item.active {*/
+/*    background-color: #0d6efd;*/
+/*    border-color: #0d6efd;*/
+/*}*/
+
+/*#employees-list .list-group-item {*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*}*/
+
+/*.employee-actions {*/
+/*    visibility: hidden;*/
+/*}*/
+
+/*#employees-list .list-group-item:hover .employee-actions {*/
+/*    visibility: visible;*/
+/*}*/
+
+/*!* Добавляем в departments.css *!*/
+/*.users-list-container {*/
+/*    border: 1px solid #dee2e6;*/
+/*    border-radius: 0.25rem;*/
+/*}*/
+
+/*#users-list .list-group-item {*/
+/*    cursor: pointer;*/
+/*    transition: background-color 0.2s;*/
+/*}*/
+
+/*#users-list .list-group-item:hover:not(.active) {*/
+/*    background-color: #f8f9fa;*/
+/*}*/
+
+/*#users-list .list-group-item.active {*/
+/*    background-color: #0d6efd;*/
+/*    color: white;*/
+/*}*/
+
+/*#users-list .text-muted {*/
+/*    opacity: 0.8;*/
+/*}*/
+
+
+/* departments.css */
+
+/* Список отделов */
 #departments-list .list-group-item {
     cursor: pointer;
     transition: background-color 0.2s;
@@ -10,8 +79,24 @@
 #departments-list .list-group-item.active {
     background-color: #0d6efd;
     border-color: #0d6efd;
+    color: white;
 }
 
+/* Кнопка "Назад" */
+.back-to-dashboard {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+/* Список сотрудников */
 #employees-list .list-group-item {
     display: flex;
     justify-content: space-between;
@@ -20,13 +105,15 @@
 
 .employee-actions {
     visibility: hidden;
+    display: flex;
+    gap: 8px;
 }
 
 #employees-list .list-group-item:hover .employee-actions {
     visibility: visible;
 }
 
-/* Добавляем в departments.css */
+/* Список пользователей */
 .users-list-container {
     border: 1px solid #dee2e6;
     border-radius: 0.25rem;
@@ -35,6 +122,9 @@
 #users-list .list-group-item {
     cursor: pointer;
     transition: background-color 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 #users-list .list-group-item:hover:not(.active) {
@@ -48,4 +138,39 @@
 
 #users-list .text-muted {
     opacity: 0.8;
+}
+
+/* Кнопки действий */
+button.add-to-department,
+button.remove-user {
+    border: none;
+    background-color: transparent;
+    color: #0d6efd;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    font-size: 0.9rem;
+}
+
+button.add-to-department:hover,
+button.remove-user:hover {
+    background-color: #e9ecef;
+}
+
+button.remove-user {
+    float: right;
+}
+
+.current-user-highlight-green {
+    background-color: #d4edda; /* Светло-зелёный фон */
+    color: #155724; /* Темно-зеленый текст */
+    font-weight: bold; /* Жирный текст */
+}
+
+
+.active-user-department {
+    background-color: #e3f2fd !important;
+    border-left: 4px solid #2196F3 !important;
+    font-weight: 500;
 }

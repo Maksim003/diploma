@@ -4,6 +4,7 @@ import com.example.diploma.controller.request.user.CreateUserRequest;
 import com.example.diploma.controller.request.user.UpdateUserRequest;
 import com.example.diploma.controller.response.UserResponse;
 import com.example.diploma.entity.MyUserDetails;
+import com.example.diploma.entity.RoleEntity;
 import com.example.diploma.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,9 @@ public class UserMapper {
         userEntity.setPatronymic(createUser.patronymic());
         userEntity.setLogin(createUser.login());
         userEntity.setPassword(createUser.password());
+        if (createUser.role() != null) {
+            RoleEntity role = new RoleEntity(createUser.role());
+        }
         return userEntity;
     }
 
@@ -33,26 +37,36 @@ public class UserMapper {
     }
 
     public UserResponse toResponse(UserEntity userEntity) {
+        Long departmentId = 0L;
+        if (userEntity.getDepartment() != null) {
+            departmentId = userEntity.getDepartment().getId();
+        }
         return new UserResponse(
                 userEntity.getId(),
                 userEntity.getName(),
                 userEntity.getSurname(),
                 userEntity.getPatronymic(),
                 userEntity.getLogin(),
-                departmentMapper.toResponse(userEntity.getDepartment()),
+                departmentId,
                 userEntity.getCreatedAt(),
                 userEntity.getUpdatedAt()
         );
     }
 
     public MyUserDetails toCustomUserDetails(UserEntity userEntity) {
+        Long departmentId = 0L;
+        if (userEntity.getDepartment() != null) {
+            departmentId = userEntity.getDepartment().getId();
+        }
         return new MyUserDetails(
+                userEntity.getId(),
                 roleMapper.toAuthority(userEntity.getRole()),
                 userEntity.getLogin(),
                 userEntity.getPassword(),
                 userEntity.getName(),
                 userEntity.getSurname(),
-                userEntity.getPatronymic()
+                userEntity.getPatronymic(),
+                departmentId
         );
     }
 

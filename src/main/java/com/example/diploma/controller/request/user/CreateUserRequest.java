@@ -8,6 +8,7 @@ public record CreateUserRequest(
         @NotBlank(message = "поле не должно быть пустым") String surname,
         @NullOrNotEmpty String patronymic,
         @NotBlank(message = "поле не должно быть пустым") String login,
-        @NotBlank(message = "поле не должно быть пустым") String password
+        @NotBlank(message = "поле не должно быть пустым") String password,
+        Long role
 ) {
 }

@@ -24,7 +24,7 @@ async function fetchWithAuth() {
 
 async function refreshAccessToken(refreshToken) {
     try {
-        const response = await fetch('/api/auth/refresh', {
+        const response = await fetch('http://127.0.0.1:8080/refresh', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

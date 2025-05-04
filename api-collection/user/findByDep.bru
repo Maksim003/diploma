@@ -1,0 +1,15 @@
+meta {
+  name: findByDep
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{path}}/users/:id/department
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: 1
+}

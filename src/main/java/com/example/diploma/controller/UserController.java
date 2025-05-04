@@ -10,8 +10,6 @@ import com.example.diploma.service.MyUserDetailsService;
 import com.example.diploma.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +31,8 @@ public class UserController {
     }
 
     @GetMapping
-    public Page<UserResponse> findAll(Pageable pageable) {
-        return userService.findAll(pageable);
+    public List<FullnameResponse> findAll() {
+        return userService.findAll();
     }
 
     @GetMapping("/{id}")
@@ -47,12 +45,19 @@ public class UserController {
         String username = authentication.getName();
         MyUserDetails userDetails = (MyUserDetails) userDetailsService.loadUserByUsername(username);
 
+        String fullName = userDetails.getSurname() + " " + userDetails.getUsername()
+                + (userDetails.getPatronymic() != null ? " " + userDetails.getPatronymic() : "");
+
         return new CurrentUser(
+                userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getName(),
                 userDetails.getSurname(),
                 userDetails.getPatronymic(),
-                userDetails.getAuthority().getAuthority()
+                fullName,
+                userDetails.getAuthority().getAuthority(),
+                userDetails.getDepartmentId()
+
         );
     }
 
@@ -60,6 +65,16 @@ public class UserController {
     @GetMapping("/{departmentId}/department")
     public List<FullnameResponse> findByIdDepartment(@PathVariable Long departmentId) {
         return userService.findByDepartment(departmentId);
+    }
+
+    @GetMapping("/department")
+    public List<FullnameResponse> findByNullDepartment() {
+        return userService.findByNullDepartment();
+    }
+
+    @PatchMapping("/{id}/assign-department/{departmentId}")
+    public void addUserToDepartment(@PathVariable Long id, @PathVariable Long departmentId) {
+        return;
     }
 
     @PutMapping("/{id}")

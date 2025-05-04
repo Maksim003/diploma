@@ -34,6 +34,7 @@ public class VacationMapper {
 
     public VacationResponse toResponse(VacationEntity vacationEntity) {
         return new VacationResponse(
+                vacationEntity.getId(),
                 fullnameMapper.toResponse(vacationEntity.getUser()),
                 vacationEntity.getStartDate(),
                 vacationEntity.getEndDate(),

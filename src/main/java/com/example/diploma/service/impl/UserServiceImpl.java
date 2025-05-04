@@ -1,18 +1,22 @@
 package com.example.diploma.service.impl;
 
 import com.example.diploma.controller.request.user.CreateUserRequest;
+import com.example.diploma.controller.request.user.UpdatePasswordRequest;
 import com.example.diploma.controller.request.user.UpdateUserRequest;
 import com.example.diploma.controller.response.FullnameResponse;
 import com.example.diploma.controller.response.UserResponse;
+import com.example.diploma.entity.DepartmentEntity;
 import com.example.diploma.entity.PositionEntity;
 import com.example.diploma.entity.RoleEntity;
 import com.example.diploma.entity.UserEntity;
 import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.DepartmentException;
 import com.example.diploma.exception.enums.PositionException;
 import com.example.diploma.exception.enums.RoleException;
 import com.example.diploma.exception.enums.UserException;
 import com.example.diploma.mapper.FullnameMapper;
 import com.example.diploma.mapper.UserMapper;
+import com.example.diploma.repository.jpa.DepartmentRepository;
 import com.example.diploma.repository.jpa.PositionRepository;
 import com.example.diploma.repository.jpa.RoleRepository;
 import com.example.diploma.repository.jpa.UserRepository;
@@ -37,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final PositionRepository positionRepository;
     private final PasswordEncoder passwordEncoder;
     private final FullnameMapper fullnameMapper;
+    private final DepartmentRepository departmentRepository;
 
     @Override
     @Transactional
@@ -57,8 +62,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponse> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable).map(userMapper::toResponse);
+    public List<FullnameResponse> findAll() {
+        return userRepository.findAllFor().stream()
+                .map(fullnameMapper::toResponse).toList();
     }
 
     @Override
@@ -75,6 +81,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<FullnameResponse> findByNullDepartment() {
+        return userRepository.findByAddDepartment()
+                .stream().map(fullnameMapper::toResponse).toList();
+    }
+
+    @Override
     public Long countUsers() {
         return userRepository.count() - 1;
     }
@@ -85,6 +97,14 @@ public class UserServiceImpl implements UserService {
         UserEntity user = getByIdOrThrow(id);
         RoleEntity roleEntity = getRoleByIdOrThrow(roleId);
         user.setRole(roleEntity);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void addUserToDepartment(Long id, Long departmentId) {
+        UserEntity user = getByIdOrThrow(id);
+        DepartmentEntity department = getDepartmentByIdOrThrow(departmentId);
+        user.setDepartment(department);
         userRepository.save(user);
     }
 
@@ -112,13 +132,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updatePassword(String login, UpdatePasswordRequest request) {
+        UserEntity user = userRepository.findByLogin(login)
+                .orElseThrow(() -> new MyException(UserException.NOT_FOUND));
+        if (passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            throw new MyException(UserException.NOT_FOUND);
+        }
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
     public void delete(Long id) {
         UserEntity user = getByIdOrThrow(id);
         if (user.getName().equalsIgnoreCase("admin") && user.getSurname().equalsIgnoreCase("admin")
-        && user.getLogin().equalsIgnoreCase("admin")) {
+                && user.getLogin().equalsIgnoreCase("admin")) {
             throw new MyException(UserException.FORBIDDEN_DELETE);
         }
-        userRepository.deleteById(id);
+        userRepository.softDelete(id);
     }
 
     private UserEntity getByIdOrThrow(Long id) {
@@ -134,6 +166,11 @@ public class UserServiceImpl implements UserService {
     private PositionEntity getPositionByIdOrThrow(Long positionId) {
         return positionRepository.findById(positionId)
                 .orElseThrow(() -> new MyException(PositionException.NOT_FOUND));
+    }
+
+    private DepartmentEntity getDepartmentByIdOrThrow(Long departmentId) {
+        return departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new MyException(DepartmentException.NOT_FOUND));
     }
 
 }

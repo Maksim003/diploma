@@ -36,6 +36,7 @@ public class BriefingResultMapper {
 
     public BriefingResultResponse toResponse(BriefingResultEntity briefingResultEntity) {
         return new BriefingResultResponse(
+                briefingResultEntity.getId(),
                 briefingResultEntity.getTotalQuestions(),
                 briefingResultEntity.getCorrectAnswers(),
                 briefingResultEntity.getPercentage(),

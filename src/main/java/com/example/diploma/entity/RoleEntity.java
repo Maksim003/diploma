@@ -19,9 +19,16 @@ public class RoleEntity extends BaseEntity<Long> {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "description")
+    private String description;
+
+    public RoleEntity(Long id) {
+        this.setId(id);
+    }
+
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[id=" + getId() + ", name=" + name + "]";
+        return this.getClass().getSimpleName() + "[id=" + getId() + ", name=" + name +  ", description=" + description + "]";
     }
 
 }

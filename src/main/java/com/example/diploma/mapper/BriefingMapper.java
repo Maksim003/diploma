@@ -34,6 +34,7 @@ public class BriefingMapper {
 
     public BriefingResponse toResponse(BriefingEntity briefingEntity) {
         return new BriefingResponse(
+                briefingEntity.getId(),
                 fullnameMapper.toResponse(briefingEntity.getCreator()),
                 briefingEntity.getType(),
                 briefingEntity.getQuestions().stream()

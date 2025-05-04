@@ -7,6 +7,7 @@ public record UpdateUserRequest(
        @NotBlank(message = "поле не должно быть пустым") String name,
        @NotBlank(message = "поле не должно быть пустым") String surname,
        @NullOrNotEmpty String patronymic,
-       @NotBlank(message = "поле не должно быть пустым") String login
+       @NotBlank(message = "поле не должно быть пустым") String login,
+       Long role
 ) {
 }

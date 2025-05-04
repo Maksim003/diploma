@@ -25,6 +25,7 @@ public class QuestionMapper {
 
     public QuestionResponse toResponse(QuestionEntity questionEntity) {
         return new QuestionResponse(
+                questionEntity.getId(),
                 questionEntity.getName(),
                 questionEntity.getAnswers().stream()
                         .map(answerMapper::toResponse).toList()

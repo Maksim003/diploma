@@ -26,7 +26,8 @@ async function loadUserData() {
             }
         });
         const user = await response.json();
-        document.getElementById('current-user').textContent = user.surname + ' ' + user.name + (user.patronymic ? ' ' + user.patronymic : '');
+        document.getElementById('current-user').textContent = user.fullName;
+        localStorage.setItem('currentUser', JSON.stringify(user));
     } catch (error) {
         console.error('Ошибка загрузки данных:', error);
     }
@@ -81,6 +82,7 @@ function logout() {
                 console.error('Ошибка при выходе:', error);
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
+                localStorage.removeItem('currentUser');
                 window.location.href = '/login.html';
             });
     } else {

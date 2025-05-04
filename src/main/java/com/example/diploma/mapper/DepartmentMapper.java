@@ -33,9 +33,14 @@ public class DepartmentMapper {
     }
 
     public DepartmentResponse toResponse(DepartmentEntity departmentEntity) {
+        Long head = 0L;
+        if (departmentEntity.getHead() != null) {
+            head = departmentEntity.getHead().getId();
+        }
         return new DepartmentResponse(
+                departmentEntity.getId(),
                 departmentEntity.getName(),
-                fullnameMapper.toResponse(departmentEntity.getHead()),
+                head,
                 departmentEntity.getMembers().stream()
                         .map(fullnameMapper::toResponse).toList()
         );

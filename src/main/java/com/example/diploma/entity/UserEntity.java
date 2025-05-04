@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -40,6 +42,9 @@ public class UserEntity extends BaseEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "department_id")
     private DepartmentEntity department;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public String getFullName() {
         String fullName = surname + " " + name;

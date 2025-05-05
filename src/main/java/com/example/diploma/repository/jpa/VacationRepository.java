@@ -6,9 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface VacationRepository extends JpaRepository<VacationEntity, Long> {
 
     @Query("SELECT COUNT(e) FROM VacationEntity e WHERE :date BETWEEN e.startDate AND e.endDate")
     Long countActiveOnDate(@Param("date") LocalDate date);
+
+    List<VacationEntity> findByUser_Id(Long userId);
 }

@@ -10,12 +10,12 @@ import com.example.diploma.mapper.SickLeavesMapper;
 import com.example.diploma.repository.jpa.SickLeavesRepository;
 import com.example.diploma.service.SickLeavesService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +33,9 @@ public class SickLeavesServiceImpl implements SickLeavesService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<SickLeavesResponse> findAll(Pageable pageable) {
-        return sickleavesRepository.findAll(pageable).map(sickLeavesMapper::toResponse);
+    public List<SickLeavesResponse> findAll() {
+        return sickleavesRepository.findAll().stream()
+                .map(sickLeavesMapper::toResponse).toList();
     }
 
     @Override
@@ -42,6 +43,12 @@ public class SickLeavesServiceImpl implements SickLeavesService {
     public SickLeavesResponse findById(Long id) {
         SickLeavesEntity sickLeavesEntity = getByIdOrThrow(id);
         return sickLeavesMapper.toResponse(sickLeavesEntity);
+    }
+
+    @Override
+    public List<SickLeavesResponse> findByUserId(Long userId) {
+        return sickleavesRepository.findByUser_Id(userId).stream()
+                .map(sickLeavesMapper::toResponse).toList();
     }
 
     @Override

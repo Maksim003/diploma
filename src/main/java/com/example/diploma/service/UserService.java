@@ -1,6 +1,7 @@
 package com.example.diploma.service;
 
 import com.example.diploma.controller.request.user.CreateUserRequest;
+import com.example.diploma.controller.request.user.RegisterUserRequest;
 import com.example.diploma.controller.request.user.UpdatePasswordRequest;
 import com.example.diploma.controller.request.user.UpdateUserRequest;
 import com.example.diploma.controller.response.FullnameResponse;
@@ -13,6 +14,8 @@ import java.util.List;
 public interface UserService {
 
     Long create(CreateUserRequest createUser);
+
+    Long registerUser(RegisterUserRequest registerUser);
 
     List<FullnameResponse> findAll();
 
@@ -34,7 +37,7 @@ public interface UserService {
 
     void update(Long id, UpdateUserRequest updateUser);
 
-    void updatePassword(String login, UpdatePasswordRequest updatePassword);
+    void updatePassword(Long id, UpdatePasswordRequest updatePassword);
 
     void delete(Long id);
 

@@ -1,6 +1,8 @@
 package com.example.diploma.controller;
 
 import com.example.diploma.controller.request.user.CreateUserRequest;
+import com.example.diploma.controller.request.user.RegisterUserRequest;
+import com.example.diploma.controller.request.user.UpdatePasswordRequest;
 import com.example.diploma.controller.request.user.UpdateUserRequest;
 import com.example.diploma.controller.response.CurrentUser;
 import com.example.diploma.controller.response.FullnameResponse;
@@ -30,6 +32,12 @@ public class UserController {
         return userService.create(createUser);
     }
 
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long register(@RequestBody @Valid RegisterUserRequest registerUser) {
+        return userService.registerUser(registerUser);
+    }
+
     @GetMapping
     public List<FullnameResponse> findAll() {
         return userService.findAll();
@@ -44,10 +52,8 @@ public class UserController {
     public CurrentUser getCurrentUser(Authentication authentication) {
         String username = authentication.getName();
         MyUserDetails userDetails = (MyUserDetails) userDetailsService.loadUserByUsername(username);
-
-        String fullName = userDetails.getSurname() + " " + userDetails.getUsername()
+        String fullName = userDetails.getSurname() + " " + userDetails.getName()
                 + (userDetails.getPatronymic() != null ? " " + userDetails.getPatronymic() : "");
-
         return new CurrentUser(
                 userDetails.getId(),
                 userDetails.getUsername(),
@@ -61,7 +67,6 @@ public class UserController {
         );
     }
 
-
     @GetMapping("/{departmentId}/department")
     public List<FullnameResponse> findByIdDepartment(@PathVariable Long departmentId) {
         return userService.findByDepartment(departmentId);
@@ -74,13 +79,19 @@ public class UserController {
 
     @PatchMapping("/{id}/assign-department/{departmentId}")
     public void addUserToDepartment(@PathVariable Long id, @PathVariable Long departmentId) {
-        return;
+        userService.addUserToDepartment(id, departmentId);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest updateUser) {
         userService.update(id, updateUser);
+    }
+
+    @PatchMapping("/{id}/pass")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updatePass(@PathVariable Long id, @RequestBody @Valid UpdatePasswordRequest updatePassword) {
+        userService.updatePassword(id, updatePassword);
     }
 
     @DeleteMapping("/{id}")

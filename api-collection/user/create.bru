@@ -7,14 +7,18 @@ meta {
 post {
   url: {{path}}/users
   body: json
-  auth: basic
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0NjM3MzM1MiwiZXhwIjoxOTAxODkzMzUyfQ.fnj7Q7yLIqzRhTvr6wfxOFge-zFrYxCJOViVIK1DMro
 }
 
 body:json {
   {
-    "name" : "admin",
-    "surname": "admin",
-    "login": "admin",
-    "password": "adminGOD"
+    "name" : "q",
+    "surname": "q",
+    "login": "q",
+    "password": "q"
   }
 }

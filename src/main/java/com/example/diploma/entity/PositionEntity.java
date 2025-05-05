@@ -19,6 +19,10 @@ public class PositionEntity extends BaseEntity<Long> {
     @Column(name = "name")
     private String name;
 
+    public PositionEntity(Long id) {
+        this.setId(id);
+    }
+
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[id=" + getId() + ", name=" + name +  "]";

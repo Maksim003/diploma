@@ -6,10 +6,10 @@ import com.example.diploma.controller.response.SickLeavesResponse;
 import com.example.diploma.service.SickLeavesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/sick-leaves")
@@ -25,13 +25,18 @@ public class SickLeavesController {
     }
 
     @GetMapping
-    public Page<SickLeavesResponse> findAll(Pageable pageable) {
-        return sickLeavesService.findAll(pageable);
+    public List<SickLeavesResponse> findAll() {
+        return sickLeavesService.findAll();
     }
 
     @GetMapping("/{id}")
     public SickLeavesResponse findById(@PathVariable Long id) {
         return sickLeavesService.findById(id);
+    }
+
+    @GetMapping("user/{userId}")
+    public List<SickLeavesResponse> findByUserId(@PathVariable Long userId) {
+        return sickLeavesService.findByUserId(userId);
     }
 
     @PutMapping("/{id}")

@@ -3,16 +3,18 @@ package com.example.diploma.service;
 import com.example.diploma.controller.request.sickLeaves.CreateSickLeavesRequest;
 import com.example.diploma.controller.request.sickLeaves.UpdateSickLeavesRequest;
 import com.example.diploma.controller.response.SickLeavesResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface SickLeavesService {
 
     Long create(CreateSickLeavesRequest createSickLeaves);
 
-    Page<SickLeavesResponse> findAll(Pageable pageable);
+    List<SickLeavesResponse> findAll();
 
     SickLeavesResponse findById(Long id);
+
+    List<SickLeavesResponse> findByUserId(Long userId);
 
     Long countActive();
 

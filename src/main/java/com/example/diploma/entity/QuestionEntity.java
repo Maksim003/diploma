@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class QuestionEntity extends BaseEntity<Long> {
 
+    @Column(name = "name",nullable = false)
     private String name;
 
     @ManyToMany

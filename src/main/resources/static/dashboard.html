@@ -60,9 +60,67 @@
             <div class="stats">Активные: <span id="active-incidents">0</span></div>
         </div>
 
+        <!-- Кнопка для добавления сотрудника, доступна только для Admin и HR -->
+        <div id="add-employee-btn-container" style="display: none;">
+            <button id="add-employee-btn" class="add-employee-btn">Добавить сотрудника</button>
+        </div>
+
     </div>
 </div>
 
+
+<!-- Модальное окно -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="employee-form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEmployeeModalLabel">Добавить сотрудника</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Форма -->
+                    <div class="mb-3">
+                        <label for="surname" class="form-label">Фамилия</label>
+                        <input type="text" class="form-control" id="surname" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="patronymic" class="form-label">Отчество</label>
+                        <input type="text" class="form-control" id="patronymic">
+                    </div>
+                    <div class="mb-3">
+                        <label for="login" class="form-label">Логин</label>
+                        <input type="text" class="form-control" id="login" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employee-search" class="form-label">Должность</label>
+                        <div style="position: relative;">
+                            <input type="text" class="form-control" id="employee-search" placeholder="Поиск по должностям" readonly>
+                            <button type="button" id="clear-position-search"
+                                    class="btn btn-sm btn-outline-secondary"
+                                    style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
+                                ✖
+                            </button>
+                        </div>
+                        <ul class="list-group mt-2" id="position-users-list"></ul>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" id="save-employee-btn" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script type="module" src="/js/dashboard.js"></script>
 </body>
 </html>

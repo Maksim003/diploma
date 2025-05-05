@@ -10,13 +10,13 @@ import com.example.diploma.mapper.IncidentMapper;
 import com.example.diploma.repository.jpa.IncidentRepository;
 import com.example.diploma.service.IncidentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +34,9 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<IncidentResponse> findAll(Pageable pageable) {
-        return incidentRepository.findAll(pageable).map(incidentMapper::toResponse);
+    public List<IncidentResponse> findAll() {
+        return incidentRepository.findAll().stream()
+                .map(incidentMapper::toResponse).toList();
     }
 
     @Override
@@ -43,6 +44,12 @@ public class IncidentServiceImpl implements IncidentService {
     public IncidentResponse findById(Long id) {
         IncidentEntity incidentEntity = getByIdOrThrow(id);
         return incidentMapper.toResponse(incidentEntity);
+    }
+
+    @Override
+    public List<IncidentResponse> findByUserId(Long userId) {
+        return incidentRepository.findByUser_Id(userId).stream()
+                .map(incidentMapper::toResponse).toList();
     }
 
     @Override

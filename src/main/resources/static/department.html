@@ -63,11 +63,16 @@
                         <label class="form-label">Название отдела*</label>
                         <input type="text" class="form-control" name="name" required>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label">Глава отдела</label>
-                        <div class="input-group mb-2">
+                        <div style="position: relative;">
                             <input type="text" class="form-control" id="head-search" placeholder="Поиск сотрудника...">
-                            <button class="btn btn-outline-secondary" type="button" id="clear-search">Очистить</button>
+                            <button type="button" id="clear-search"
+                                    class="btn btn-sm btn-outline-secondary"
+                                    style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
+                                ✖
+                            </button>
                         </div>
                         <div class="users-list-container" style="max-height: 200px; overflow-y: auto;">
                             <ul class="list-group" id="users-list">
@@ -75,6 +80,7 @@
                             </ul>
                         </div>
                     </div>
+
                 </form>
             </div>
             <div class="modal-footer">
@@ -94,9 +100,13 @@
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label">Сотрудник</label>
-                    <div class="input-group mb-2">
+                    <div style="position: relative;">
                         <input type="text" class="form-control" id="employee-search" placeholder="Поиск сотрудника...">
-                        <button class="btn btn-outline-secondary" type="button" id="clear-employee-search">Очистить</button>
+                        <button type="button" id="clear-employee-search"
+                                class="btn btn-sm btn-outline-secondary"
+                                style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
+                            ✖
+                        </button>
                     </div>
                     <div class="users-list-container" style="max-height: 200px; overflow-y: auto;">
                         <ul class="list-group" id="employee-users-list">
@@ -105,6 +115,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                 <button type="button" class="btn btn-primary" id="add-employee">Добавить</button>

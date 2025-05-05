@@ -5,12 +5,16 @@ meta {
 }
 
 get {
-  url: {{path}}/users?page&size
+  url: {{path}}/users
   body: none
-  auth: none
+  auth: bearer
 }
 
 params:query {
-  page: 
-  size: 
+  ~page: 
+  ~size: 
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0NjM2NzEyNiwiZXhwIjoxOTAxODg3MTI2fQ.BU5K91Aej7hwMRMIAuoQxBmVviJH-MhDbJwX3OrQ0M4
 }

@@ -1,9 +1,11 @@
 package com.example.diploma.mapper;
 
 import com.example.diploma.controller.request.user.CreateUserRequest;
+import com.example.diploma.controller.request.user.RegisterUserRequest;
 import com.example.diploma.controller.request.user.UpdateUserRequest;
 import com.example.diploma.controller.response.UserResponse;
 import com.example.diploma.entity.MyUserDetails;
+import com.example.diploma.entity.PositionEntity;
 import com.example.diploma.entity.RoleEntity;
 import com.example.diploma.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +25,17 @@ public class UserMapper {
         userEntity.setPatronymic(createUser.patronymic());
         userEntity.setLogin(createUser.login());
         userEntity.setPassword(createUser.password());
-        if (createUser.role() != null) {
-            RoleEntity role = new RoleEntity(createUser.role());
-        }
+        return userEntity;
+    }
+
+    public UserEntity toRegisterEntity(RegisterUserRequest registerUser) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setName(registerUser.name());
+        userEntity.setSurname(registerUser.surname());
+        userEntity.setPatronymic(registerUser.patronymic());
+        userEntity.setLogin(registerUser.login());
+        PositionEntity positionEntity = new PositionEntity(registerUser.position());
+        userEntity.setPosition(positionEntity);
         return userEntity;
     }
 

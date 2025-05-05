@@ -7,9 +7,13 @@ meta {
 delete {
   url: {{path}}/users/{{id}}
   body: none
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0NjM2NTY5NywiZXhwIjoxOTAxODg1Njk3fQ.uPLGqer4q5Tufl7kewijhRZw3cSGgD2Z0SZUMQQ-lww
 }
 
 vars:pre-request {
-  id: 5
+  id: 9
 }

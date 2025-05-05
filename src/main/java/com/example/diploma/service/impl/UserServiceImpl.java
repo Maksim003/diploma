@@ -1,6 +1,7 @@
 package com.example.diploma.service.impl;
 
 import com.example.diploma.controller.request.user.CreateUserRequest;
+import com.example.diploma.controller.request.user.RegisterUserRequest;
 import com.example.diploma.controller.request.user.UpdatePasswordRequest;
 import com.example.diploma.controller.request.user.UpdateUserRequest;
 import com.example.diploma.controller.response.FullnameResponse;
@@ -58,6 +59,16 @@ public class UserServiceImpl implements UserService {
         }
 
         return userRepository.save(userEntity).getId();
+    }
+
+    @Override
+    public Long registerUser(RegisterUserRequest registerUser) {
+        UserEntity user = userMapper.toRegisterEntity(registerUser);
+        RoleEntity roleEntity = roleRepository.findByName("USER");
+        user.setRole(roleEntity);
+        String encryptedPassword = passwordEncoder.encode("qwerty123");
+        user.setPassword(encryptedPassword);
+        return userRepository.save(user).getId();
     }
 
     @Override
@@ -132,13 +143,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(String login, UpdatePasswordRequest request) {
-        UserEntity user = userRepository.findByLogin(login)
-                .orElseThrow(() -> new MyException(UserException.NOT_FOUND));
-        if (passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
-            throw new MyException(UserException.NOT_FOUND);
-        }
-        user.setPassword(passwordEncoder.encode(request.newPassword()));
+    public void updatePassword(Long id, UpdatePasswordRequest request) {
+        UserEntity user = getByIdOrThrow(id);
+        String unencryptedPassword = request.password();
+        String encryptedPassword = passwordEncoder.encode(unencryptedPassword);
+        user.setPassword(encryptedPassword);
         userRepository.save(user);
     }
 

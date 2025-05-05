@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     async function saveDepartment() {
         const form = document.getElementById('department-form');
         const formData = {
-            name: form.elements['name'].value,
+            name: form.elements['name'].value.trim(),
             head: selectedHead?.id || null
         };
 

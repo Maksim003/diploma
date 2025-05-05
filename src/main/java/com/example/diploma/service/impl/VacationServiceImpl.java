@@ -11,12 +11,12 @@ import com.example.diploma.mapper.VacationMapper;
 import com.example.diploma.repository.jpa.VacationRepository;
 import com.example.diploma.service.VacationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +34,9 @@ public class VacationServiceImpl implements VacationService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<VacationResponse> findAll(Pageable pageable) {
-        return vacationRepository.findAll(pageable).map(vacationMapper::toResponse);
+    public List<VacationResponse> findAll() {
+        return vacationRepository.findAll().stream()
+                .map(vacationMapper::toResponse).toList();
     }
 
     @Override
@@ -43,6 +44,12 @@ public class VacationServiceImpl implements VacationService {
     public VacationResponse findById(Long id) {
         VacationEntity vacationEntity = getByIdOrThrow(id);
         return vacationMapper.toResponse(vacationEntity);
+    }
+
+    @Override
+    public List<VacationResponse> findByUserId(Long userId) {
+        return vacationRepository.findByUser_Id(userId).stream()
+                .map(vacationMapper::toResponse).toList();
     }
 
     @Override

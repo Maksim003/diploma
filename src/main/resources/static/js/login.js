@@ -51,7 +51,14 @@ function authenticateUser(login, password) {
             localStorage.setItem('refreshToken', data.refreshToken);
             localStorage.setItem('login', login);
 
-            window.location.href = 'dashboard.html';
+            if (password === 'qwerty123') {
+                setTimeout(() => {
+                    window.location.href = 'password.html';
+                }, 100);
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+
         })
         .catch(error => {
             console.error('Auth Error:', error);

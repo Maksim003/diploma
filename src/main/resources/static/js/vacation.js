@@ -1,116 +1,234 @@
-document.addEventListener('DOMContentLoaded', async function() {
-    const token = localStorage.getItem('jwtToken');
+import {fetchWithAuth} from './auth.js';
 
-    if (!token) {
+document.addEventListener('DOMContentLoaded', async function () {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
         window.location.href = '/login.html';
         return;
     }
 
-    // Элементы
+    document.getElementById('back-to-dashboard').addEventListener('click', () => {
+        window.location.href = '/dashboard.html';
+    });
+
     const addVacationBtn = document.getElementById('add-vacation-btn');
     const saveVacationBtn = document.getElementById('save-vacation');
     const departmentFilter = document.getElementById('department-filter');
     const monthFilter = document.getElementById('month-filter');
-    const employeeSelect = document.getElementById('employee-select');
+    const employeeSearchInput = document.getElementById('employee-search');
+    const clearEmployeeSearchBtn = document.getElementById('clear-employee-search');
+    const employeeListContainer = document.getElementById('employee-users-list');
 
-    // Инициализация
-    const currentUser = await fetchCurrentUser();
-    if (currentUser.roles.includes('ADMIN') || currentUser.roles.includes('HR')) {
+    let currentUser = null;
+    let allEmployees = [];
+    let selectedEmployee = null;
+
+    await fetchWithAuth();
+    await loadCurrentUser();
+    currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    if (currentUser.role.includes('ADMIN') || currentUser.role.includes('HR')) {
         document.getElementById('admin-actions').style.display = 'block';
+        addVacationBtn.addEventListener('click', showAddVacationModal);
+        saveVacationBtn.addEventListener('click', saveVacation);
+    } else {
+        document.getElementById('admin-actions').style.display = 'none';
+
+        if (currentUser.role.includes('HEAD') || currentUser.role.includes('ENGINEER')
+            || currentUser.role.includes('USER')) {
+            document.getElementById('department-filter').style.display = 'none';
+        }
     }
 
     await loadDepartments();
     await loadEmployees();
     await loadVacations();
 
-    // События
-    addVacationBtn.addEventListener('click', showAddVacationModal);
-    saveVacationBtn.addEventListener('click', saveVacation);
-    departmentFilter.addEventListener('change', loadVacations);
-    monthFilter.addEventListener('change', loadVacations);
+    let debounceTimeout;
 
-    // ===== ОСНОВНЫЕ ФУНКЦИИ =====
+    function debounceFilters() {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(loadVacations, 300);
+    }
 
-    async function fetchCurrentUser() {
-        const response = await fetch('/api/auth/current-user', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        return await response.json();
+    departmentFilter.addEventListener('change', debounceFilters);
+    monthFilter.addEventListener('change', debounceFilters);
+
+    async function loadCurrentUser() {
+        try {
+            const res = await fetch('http://127.0.0.1:8080/users/current-user', {
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка загрузки пользователя');
+            const user = await res.json();
+            localStorage.setItem('currentUser', JSON.stringify(user));
+        } catch (error) {
+            console.error('Ошибка загрузки пользователя:', error);
+            window.location.href = '/login.html';
+        }
     }
 
     async function loadDepartments() {
-        const response = await fetch('/api/departments', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const departments = await response.json();
+        try {
+            const res = await fetch('http://127.0.0.1:8080/departments', {
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка загрузки отделов');
+            const departments = await res.json();
 
-        departmentFilter.innerHTML = '<option value="">Все отделы</option>';
-        departments.forEach(dept => {
-            const option = document.createElement('option');
-            option.value = dept.id;
-            option.textContent = dept.name;
-            departmentFilter.appendChild(option);
-        });
+            departmentFilter.innerHTML = '<option value="">Все отделы</option>';
+            departments.forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept.id;
+                option.textContent = dept.name;
+                departmentFilter.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Ошибка загрузки отделов:', error);
+        }
     }
 
     async function loadEmployees() {
-        const response = await fetch('/api/users', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const employees = await response.json();
+        try {
+            const res = await fetch('http://127.0.0.1:8080/users', {
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка загрузки сотрудников');
+            allEmployees = await res.json();
 
-        employeeSelect.innerHTML = '<option value="">Выберите сотрудника</option>';
+            renderEmployeeList(allEmployees);
+        } catch (error) {
+            console.error('Ошибка загрузки сотрудников:', error);
+        }
+    }
+
+    function renderEmployeeList(employees) {
+        employeeListContainer.innerHTML = '';
+
+        if (employees.length === 0) {
+            employeeListContainer.innerHTML = '<li class="list-group-item text-muted">Сотрудники не найдены</li>';
+            return;
+        }
+
         employees.forEach(emp => {
-            const option = document.createElement('option');
-            option.value = emp.id;
-            option.textContent = `${emp.fullName} (${emp.department?.name || '-'})`;
-            employeeSelect.appendChild(option);
+            const li = document.createElement('li');
+            li.className = `list-group-item list-group-item-action ${selectedEmployee?.id === emp.id ? 'active' : ''}`;
+            li.textContent = `${emp.fullName} (${emp.departmentName || '-'})`;
+            li.addEventListener('click', () => {
+                selectedEmployee = emp;
+                employeeSearchInput.value = emp.fullName;
+                renderEmployeeList(employees);
+            });
+            employeeListContainer.appendChild(li);
         });
     }
+
+    employeeSearchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allEmployees.filter(emp =>
+            emp.fullName.toLowerCase().includes(term)
+        );
+        renderEmployeeList(filtered);
+    });
+
+    clearEmployeeSearchBtn.addEventListener('click', () => {
+        employeeSearchInput.value = '';
+        selectedEmployee = null;
+        renderEmployeeList(allEmployees);
+    });
 
     async function loadVacations() {
         const departmentId = departmentFilter.value;
         const month = monthFilter.value;
 
-        let url = '/api/vacations?';
-        if (departmentId) url += `departmentId=${departmentId}&`;
-        if (month) url += `month=${month}`;
+        let url = 'http://127.0.0.1:8080/vacations?';
 
-        const response = await fetch(url, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const vacations = await response.json();
-        renderVacationsTable(vacations);
+        // Если пользователь HEAD_ENGINEER, загружаем только его отпуска
+        if (currentUser.role.includes('HEAD') || currentUser.role.includes('ENGINEER')
+            || currentUser.role.includes('USER')) {
+            url = `http://127.0.0.1:8080/vacations/user/${currentUser.id}`;
+        } else {
+            if (departmentId) url += `departmentId=${departmentId}&`;
+            if (month) url += `month=${month}`;
+        }
+
+        try {
+            const res = await fetch(url, {
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка загрузки отпусков');
+            const vacations = await res.json();
+            renderVacationsTable(vacations);
+        } catch (error) {
+            console.error('Ошибка загрузки отпусков:', error);
+            renderVacationsTable([]);
+        }
     }
 
     function renderVacationsTable(vacations) {
         const tbody = document.getElementById('vacations-table');
         tbody.innerHTML = '';
 
+        // Показываем/скрываем заголовок "Действие" в зависимости от роли
+        const actionHeader = document.getElementById('action-header');
+        actionHeader.style.display =
+            (currentUser.role.includes('ADMIN') || currentUser.role.includes('HR'))
+                ? 'table-cell'
+                : 'none';
+
         if (vacations.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4">Нет данных об отпусках</td></tr>`;
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">Нет данных об отпусках</td></tr>';
             return;
         }
 
-        vacations.forEach(vacation => {
+        vacations.forEach(vac => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${vacation.employeeFullName}</td>
-                <td>${vacation.departmentName || '-'}</td>
-                <td>${formatDate(vacation.startDate)}</td>
-                <td>${formatDate(vacation.endDate)}</td>
-                <td>${getVacationTypeName(vacation.type)}</td>
-                <td><span class="badge ${getStatusClass(vacation.status)}">${getStatusName(vacation.status)}</span></td>
-            `;
+            <td>${vac.user.fullName}</td>
+            <td>${vac.user.departmentName || '-'}</td>
+            <td>${formatDate(vac.startDate)}</td>
+            <td>${formatDate(vac.endDate)}</td>
+            <td>${getVacationTypeName(vac.type)}</td>
+        `;
+
+            if (currentUser.role.includes('ADMIN') || currentUser.role.includes('HR')) {
+                const td = document.createElement('td');
+                td.className = 'action-cell'; // Для стилизации (если нужно)
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-sm btn-danger';
+                deleteBtn.textContent = 'Удалить';
+                deleteBtn.addEventListener('click', () => deleteVacation(vac.id));
+                td.appendChild(deleteBtn);
+                row.appendChild(td);
+            }
+
             tbody.appendChild(row);
         });
     }
 
-    function showAddVacationModal() {
-        const modal = new bootstrap.Modal(document.getElementById('vacationModal'));
-        document.getElementById('vacation-form').reset();
+    async function deleteVacation(vacationId) {
+        if (!confirm('Вы уверены, что хотите удалить отпуск?')) return;
 
-        // Установим минимальную дату (сегодня)
+        try {
+            const res = await fetch(`http://127.0.0.1:8080/vacations/${vacationId}`, {
+                method: 'DELETE',
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка удаления отпуска');
+            await loadVacations();
+        } catch (error) {
+            console.error('Ошибка удаления отпуска:', error);
+            alert('Не удалось удалить отпуск');
+        }
+    }
+
+    function showAddVacationModal() {
+        const modal = new bootstrap.Modal(document.getElementById('addVacationModal'));
+        document.getElementById('vacation-form').reset();
+        selectedEmployee = null;
+        employeeSearchInput.value = '';
+        renderEmployeeList(allEmployees);
+
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('start-date').min = today;
         document.getElementById('end-date').min = today;
@@ -125,63 +243,65 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
         }
 
+        const startDate = new Date(document.getElementById('start-date').value);
+        const endDate = new Date(document.getElementById('end-date').value);
+
+        if (endDate <= startDate) {
+            alert('Дата окончания отпуска должна быть позже даты начала!');
+            return;
+        }
+
+        const timeDifference = (endDate - startDate) / (1000 * 3600 * 24);
+        if (timeDifference > 30) {
+            alert('Продолжительность отпуска не может превышать 30 дней!');
+            return;
+        }
+
+        if (!selectedEmployee?.id) {
+            alert('Выберите сотрудника из списка!');
+            return;
+        }
+
         const vacationData = {
-            user: parseInt(employeeSelect.value),
+            user: selectedEmployee.id,
             startDate: document.getElementById('start-date').value,
             endDate: document.getElementById('end-date').value,
             type: document.getElementById('vacation-type').value,
-            status: 'PENDING' // По умолчанию "На рассмотрении"
         };
 
         try {
-            const response = await fetch('/api/vacations', {
+            const res = await fetch('http://127.0.0.1:8080/vacations', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${accessToken}`
                 },
                 body: JSON.stringify(vacationData)
             });
 
-            if (!response.ok) throw new Error('Ошибка сохранения');
+            if (!res.ok) throw new Error('Ошибка добавления отпуска');
 
-            bootstrap.Modal.getInstance(document.getElementById('vacationModal')).hide();
+            bootstrap.Modal.getInstance(document.getElementById('addVacationModal')).hide();
+            form.classList.remove('was-validated');
             await loadVacations();
         } catch (error) {
-            console.error('Ошибка:', error);
+            console.error('Ошибка добавления отпуска:', error);
             alert('Не удалось сохранить отпуск');
         }
     }
-
-    // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
 
     function formatDate(dateString) {
         return new Date(dateString).toLocaleDateString('ru-RU');
     }
 
-    function getStatusClass(status) {
-        switch(status) {
-            case 'APPROVED': return 'bg-success';
-            case 'PENDING': return 'bg-warning';
-            case 'REJECTED': return 'bg-danger';
-            default: return 'bg-secondary';
-        }
-    }
-
-    function getStatusName(status) {
-        switch(status) {
-            case 'APPROVED': return 'Утверждён';
-            case 'PENDING': return 'На рассмотрении';
-            case 'REJECTED': return 'Отклонён';
-            default: return status;
-        }
-    }
-
     function getVacationTypeName(type) {
-        switch(type) {
-            case 'PAID': return 'Оплачиваемый';
-            case 'UNPAID': return 'Без оплаты';
-            default: return type;
+        switch (type) {
+            case 'PAID':
+                return 'Оплачиваемый';
+            case 'UNPAID':
+                return 'Без оплаты';
+            default:
+                return type;
         }
     }
 });

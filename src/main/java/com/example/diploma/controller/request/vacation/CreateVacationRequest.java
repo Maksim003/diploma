@@ -9,7 +9,6 @@ public record CreateVacationRequest(
         @NotNull(message = "поле не должно быть пустым") @JsonFormat(pattern = "yyyy-MM-dd") Long user,
         @NotNull(message = "поле не должно быть пустым") @JsonFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
         @NotNull(message = "поле не должно быть пустым") LocalDate endDate,
-        String type,
-        String status
+        String type
 ) {
 }

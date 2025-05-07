@@ -19,7 +19,6 @@ public class VacationMapper {
         vacationEntity.setStartDate(createVacation.startDate());
         vacationEntity.setEndDate(createVacation.endDate());
         vacationEntity.setType(createVacation.type());
-        vacationEntity.setStatus(createVacation.status());
         UserEntity userEntity = new UserEntity(createVacation.user());
         vacationEntity.setUser(userEntity);
         return vacationEntity;
@@ -29,7 +28,6 @@ public class VacationMapper {
         vacationEntity.setStartDate(updateVacation.startDate());
         vacationEntity.setEndDate(updateVacation.endDate());
         vacationEntity.setType(updateVacation.type());
-        vacationEntity.setStatus(updateVacation.status());
     }
 
     public VacationResponse toResponse(VacationEntity vacationEntity) {
@@ -38,9 +36,7 @@ public class VacationMapper {
                 fullnameMapper.toResponse(vacationEntity.getUser()),
                 vacationEntity.getStartDate(),
                 vacationEntity.getEndDate(),
-                vacationEntity.getType(),
-                vacationEntity.getStatus(),
-                fullnameMapper.toResponse(vacationEntity.getApprovedBy())
+                vacationEntity.getType()
         );
     }
 

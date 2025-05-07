@@ -8,7 +8,6 @@ import java.time.LocalDate;
 public record UpdateVacationRequest(
         @NotNull(message = "поле не должно быть пустым") @JsonFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
         @NotNull(message = "поле не должно быть пустым") @JsonFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-        String type,
-        String status
+        String type
 ) {
 }

@@ -4,6 +4,7 @@ public record FullnameResponse(
         Long id,
         String fullName,
         String position,
-        Long departmentId
+        Long departmentId,
+        String departmentName
 ) {
 }

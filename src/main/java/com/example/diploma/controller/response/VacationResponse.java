@@ -9,8 +9,6 @@ public record VacationResponse(
         FullnameResponse user,
         @JsonFormat(pattern = "yyyy-MM-dd")LocalDate startDate,
         @JsonFormat(pattern = "yyyy-MM-dd")LocalDate endDate,
-        String type,
-        String status,
-        FullnameResponse approver
+        String type
 ) {
 }

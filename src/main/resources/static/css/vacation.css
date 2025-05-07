@@ -136,6 +136,24 @@ h1 {
     color: #842029;
 }
 
+.back-to-dashboard {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.users-list-container {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
 /* Модальное окно */
 .modal-content {
     border: none;
@@ -197,10 +215,46 @@ h1 {
     }
 }
 
+/* Исправление для кнопки удаления */
+.table td:last-child {
+    vertical-align: middle;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Центрирование фильтров */
+.card-body .row {
+    align-items: center;
+}
+
+/* Улучшение выравнивания элементов фильтров */
+.col-md-4 {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Уменьшение отступов в таблице */
+.table td, .table th {
+    padding: 0.75rem 1rem;
+}
+
+#vacations-table tr {
+    line-height: 1.2;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
 /* Анимации */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .table tbody tr {

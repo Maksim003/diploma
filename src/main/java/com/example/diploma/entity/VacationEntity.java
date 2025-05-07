@@ -25,21 +25,14 @@ public class VacationEntity extends BaseEntity<Long> {
     @Column(name = "type")
     private String type;
 
-    @Column(name = "status")
-    private String status;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @ManyToOne
-    @JoinColumn(name = "approved_by")
-    private UserEntity approvedBy;
-
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[id=" + getId() + ", startDate=" + startDate + ", endDate=" + endDate
-                + ", type=" + type + ", status=" + status + "]";
+                + ", type=" + type + "]";
     }
 
 }

@@ -6,10 +6,20 @@ meta {
 
 patch {
   url: {{path}}/users/:id/pass
-  body: none
-  auth: inherit
+  body: json
+  auth: bearer
 }
 
 params:path {
-  id: 
+  id: 17
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJSIiwiaWF0IjoxNzQ2NDcwMzM5LCJleHAiOjE5MDE5OTAzMzl9.6VuKJhc0sRueRznlPyH9Er9yH09vWzTIzT9iqVXq2lQ
+}
+
+body:json {
+  {
+    "password":"R"
+  }
 }

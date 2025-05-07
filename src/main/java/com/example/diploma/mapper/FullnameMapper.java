@@ -10,17 +10,20 @@ public class FullnameMapper {
     public FullnameResponse toResponse(UserEntity userEntity) {
         String position = "";
         Long departmentId = 0L;
+        String departmentName = "";
         if (userEntity.getPosition() != null) {
             position = userEntity.getPosition().getName();
         }
         if (userEntity.getDepartment() != null) {
             departmentId = userEntity.getDepartment().getId();
+            departmentName = userEntity.getDepartment().getName();
         }
         return new FullnameResponse(
                 userEntity.getId(),
                 userEntity.getFullName(),
                 position,
-                departmentId
+                departmentId,
+                departmentName
         );
     }
 

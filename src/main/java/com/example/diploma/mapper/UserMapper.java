@@ -6,7 +6,6 @@ import com.example.diploma.controller.request.user.UpdateUserRequest;
 import com.example.diploma.controller.response.UserResponse;
 import com.example.diploma.entity.MyUserDetails;
 import com.example.diploma.entity.PositionEntity;
-import com.example.diploma.entity.RoleEntity;
 import com.example.diploma.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserMapper {
 
-    private final DepartmentMapper departmentMapper;
     private final RoleMapper roleMapper;
 
     public UserEntity toEntity(CreateUserRequest createUser) {

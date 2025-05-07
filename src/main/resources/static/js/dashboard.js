@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             bootstrap.Modal.getInstance(document.getElementById('addEmployeeModal')).hide();
             resetForm();
-            await loadStats(); // ✅ обновляем статистику
+            await loadStats();
         } catch (error) {
             alert(error.message);
         }

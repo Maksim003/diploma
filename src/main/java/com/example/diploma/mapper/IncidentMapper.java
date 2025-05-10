@@ -8,6 +8,8 @@ import com.example.diploma.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class IncidentMapper {
@@ -19,9 +21,10 @@ public class IncidentMapper {
         incidentEntity.setDate(createIncident.date());
         incidentEntity.setDescription(createIncident.description());
         incidentEntity.setType(createIncident.type());
-        incidentEntity.setStatus(createIncident.status());
-        UserEntity userEntity = new UserEntity(createIncident.user());
-        incidentEntity.setUser(userEntity);
+        incidentEntity.setActions(createIncident.actions());
+        List<UserEntity> users = createIncident.users().stream()
+                .map(UserEntity::new).toList();
+        incidentEntity.setUsers(users);
         return incidentEntity;
     }
 
@@ -29,17 +32,19 @@ public class IncidentMapper {
         incidentEntity.setDate(updateIncident.date());
         incidentEntity.setDescription(updateIncident.description());
         incidentEntity.setType(updateIncident.type());
-        incidentEntity.setStatus(updateIncident.status());
+        incidentEntity.setActions(updateIncident.actions());
     }
 
     public IncidentResponse toResponse(IncidentEntity incidentEntity) {
         return new IncidentResponse(
                 incidentEntity.getId(),
-                fullnameMapper.toResponse(incidentEntity.getUser()),
+                incidentEntity.getUsers().stream()
+                        .map(fullnameMapper::toResponse)
+                        .toList(),
                 incidentEntity.getDate(),
                 incidentEntity.getType(),
                 incidentEntity.getDescription(),
-                incidentEntity.getStatus()
+                incidentEntity.getActions()
         );
     }
 

@@ -144,9 +144,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         let url = 'http://127.0.0.1:8080/vacations?';
 
         // Если пользователь HEAD_ENGINEER, загружаем только его отпуска
-        if (currentUser.role.includes('HEAD') || currentUser.role.includes('ENGINEER')
-            || currentUser.role.includes('USER')) {
+        if (currentUser.role.includes('ENGINEER') || currentUser.role.includes('USER')) {
             url = `http://127.0.0.1:8080/vacations/user/${currentUser.id}`;
+        } else if (currentUser.role.includes('HEAD')) {
+            url = `http://127.0.0.1:8080/vacations/department/${currentUser.departmentId}`;
         } else {
             if (departmentId) url += `departmentId=${departmentId}&`;
             if (month) url += `month=${month}`;
@@ -184,7 +185,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         vacations.forEach(vac => {
             const row = document.createElement('tr');
             row.innerHTML = `
-            <td>${vac.user.fullName}</td>
+            <td style="${(currentUser.role.includes('HEAD') && vac.user.id === currentUser.id) ? 'color: green; font-weight: bold;' : ''}">
+    ${vac.user.fullName}</td>
             <td>${vac.user.departmentName || '-'}</td>
             <td>${formatDate(vac.startDate)}</td>
             <td>${formatDate(vac.endDate)}</td>
@@ -229,9 +231,21 @@ document.addEventListener('DOMContentLoaded', async function () {
         employeeSearchInput.value = '';
         renderEmployeeList(allEmployees);
 
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('start-date').min = today;
-        document.getElementById('end-date').min = today;
+        const today = new Date();
+
+        const oneYearAgo = new Date(today);
+        oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+        const oneYearAhead = new Date(today);
+        oneYearAhead.setFullYear(today.getFullYear() + 1);
+
+        const minDateStr = oneYearAgo.toISOString().split('T')[0];
+        const maxDateStr = oneYearAhead.toISOString().split('T')[0];
+
+        document.getElementById('start-date').min = minDateStr;
+        document.getElementById('start-date').max = maxDateStr;
+        document.getElementById('end-date').min = minDateStr;
+        document.getElementById('end-date').max = maxDateStr;
 
         modal.show();
     }

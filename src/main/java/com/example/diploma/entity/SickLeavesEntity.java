@@ -25,9 +25,6 @@ public class SickLeavesEntity extends BaseEntity<Long> {
     @Column(name = "document_number", unique = true)
     private String documentNumber;
 
-    @Column(name = "status")
-    private String status;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
@@ -35,7 +32,7 @@ public class SickLeavesEntity extends BaseEntity<Long> {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[id=" + getId() + ", startDate=" + startDate + ", endDate=" + endDate
-                + ", documentNumber=" + documentNumber + ", status=" + status + "]";
+                + ", documentNumber=" + documentNumber + "]";
     }
 
 }

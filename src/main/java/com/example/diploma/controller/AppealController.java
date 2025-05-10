@@ -6,10 +6,10 @@ import com.example.diploma.controller.response.AppealResponse;
 import com.example.diploma.service.AppealService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/appeals")
@@ -25,8 +25,18 @@ public class AppealController {
     }
 
     @GetMapping
-    public Page<AppealResponse> findAll(Pageable pageable) {
-        return appealService.findAll(pageable);
+    public List<AppealResponse> findAll() {
+        return appealService.findAll();
+    }
+
+    @GetMapping("user/{userId}")
+    public List<AppealResponse> findByUserId(@PathVariable Long userId) {
+        return appealService.findByUserId(userId);
+    }
+
+    @GetMapping("department/{departmentId}")
+    public List<AppealResponse> findByDepartmentId(@PathVariable Long departmentId) {
+        return appealService.findByDepartmentId(departmentId);
     }
 
     @GetMapping("/{id}")
@@ -38,6 +48,12 @@ public class AppealController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable Long id, @RequestBody @Valid UpdateAppealRequest updateAppeal) {
         appealService.update(id, updateAppeal);
+    }
+
+    @PatchMapping("/{id}/status")
+    @ResponseStatus(HttpStatus.OK)
+    public void confirm(@PathVariable Long id, @RequestBody String status) {
+        appealService.confirm(id, status);
     }
 
     @DeleteMapping("/{id}")

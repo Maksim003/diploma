@@ -10,7 +10,6 @@ import com.example.diploma.mapper.SickLeavesMapper;
 import com.example.diploma.repository.jpa.SickLeavesRepository;
 import com.example.diploma.service.SickLeavesService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,8 +45,16 @@ public class SickLeavesServiceImpl implements SickLeavesService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SickLeavesResponse> findByUserId(Long userId) {
         return sickleavesRepository.findByUser_Id(userId).stream()
+                .map(sickLeavesMapper::toResponse).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SickLeavesResponse> findByDepartmentId(Long departmentId) {
+        return sickleavesRepository.findByUser_Department_Id(departmentId).stream()
                 .map(sickLeavesMapper::toResponse).toList();
     }
 

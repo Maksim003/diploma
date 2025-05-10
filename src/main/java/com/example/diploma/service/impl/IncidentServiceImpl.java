@@ -10,7 +10,6 @@ import com.example.diploma.mapper.IncidentMapper;
 import com.example.diploma.repository.jpa.IncidentRepository;
 import com.example.diploma.service.IncidentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,8 +46,16 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<IncidentResponse> findByUserId(Long userId) {
-        return incidentRepository.findByUser_Id(userId).stream()
+        return incidentRepository.findByUsers_Id(userId).stream()
+                .map(incidentMapper::toResponse).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<IncidentResponse> findByDepartmentId(Long departmentId) {
+        return incidentRepository.findByUsers_Department_Id(departmentId).stream()
                 .map(incidentMapper::toResponse).toList();
     }
 

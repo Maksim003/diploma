@@ -4,12 +4,9 @@ package com.example.diploma.controller;
 import com.example.diploma.controller.request.incident.CreateIncidentRequest;
 import com.example.diploma.controller.request.incident.UpdateIncidentRequest;
 import com.example.diploma.controller.response.IncidentResponse;
-import com.example.diploma.controller.response.VacationResponse;
 import com.example.diploma.service.IncidentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +39,12 @@ public class IncidentController {
     public List<IncidentResponse> findByUserId(@PathVariable Long userId) {
         return incidentService.findByUserId(userId);
     }
+
+    @GetMapping("department/{departmentId}")
+    public List<IncidentResponse> findByDepartmentId(@PathVariable Long departmentId) {
+        return incidentService.findByDepartmentId(departmentId);
+    }
+
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

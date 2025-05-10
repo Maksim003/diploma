@@ -9,7 +9,6 @@ public record SickLeavesResponse(
         FullnameResponse user,
         @JsonFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
         @JsonFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-        String documentNumber,
-        String status
+        String documentNumber
 ) {
 }

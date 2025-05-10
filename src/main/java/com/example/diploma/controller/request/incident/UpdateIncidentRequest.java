@@ -8,6 +8,6 @@ public record UpdateIncidentRequest(
         @NotNull(message = "поле не должно быть пустым") LocalDateTime date,
         String type,
         String description,
-        String status
+        String actions
 ) {
 }

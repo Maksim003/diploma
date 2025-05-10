@@ -16,11 +16,11 @@ public class AppealMapper {
 
     public AppealEntity toEntity(CreateAppealRequest createAppeal) {
         AppealEntity appealEntity = new AppealEntity();
-        appealEntity.setDate(createAppeal.date());
         appealEntity.setSubject(createAppeal.subject());
         appealEntity.setDescription(createAppeal.description());
         UserEntity userEntity = new UserEntity(createAppeal.user());
-        appealEntity.setCreator(userEntity);
+        appealEntity.setUser(userEntity);
+        appealEntity.setStatus(createAppeal.status());
         return appealEntity;
     }
 
@@ -32,11 +32,11 @@ public class AppealMapper {
     public AppealResponse toResponse(AppealEntity appealEntity) {
         return new AppealResponse(
                 appealEntity.getId(),
-                fullnameMapper.toResponse(appealEntity.getCreator()),
-                appealEntity.getDate(),
+                fullnameMapper.toResponse(appealEntity.getUser()),
+                appealEntity.getCreatedAt(),
                 appealEntity.getSubject(),
                 appealEntity.getDescription(),
-                appealEntity.getAnswer()
+                appealEntity.getStatus()
         );
     }
 

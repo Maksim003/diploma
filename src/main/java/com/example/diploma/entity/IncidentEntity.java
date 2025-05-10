@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "incidents")
@@ -25,17 +26,22 @@ public class IncidentEntity extends BaseEntity<Long> {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "status")
-    private String status;
+    @Column(name = "actions_taken")
+    private String actions;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+//    private UserEntity user;
+
+    @ManyToMany
+    @JoinTable(name = "m2m_incidents_users", joinColumns = @JoinColumn(name = "incident_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<UserEntity> users;
 
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[id=" + getId() + ", date=" + date + ", type=" + type
-                + ", description=" + description + ", status=" + status + "]";
+                + ", description=" + description + ", actions=" + actions + "]";
     }
 
 }

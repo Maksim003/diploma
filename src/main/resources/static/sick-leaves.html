@@ -1,62 +1,50 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Учёт больничных листов</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/sick-leaves.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/css/sick-leaves.css"/>
 </head>
 <body>
 <div class="container py-4">
-    <h1 class="mb-4"><i class="bi bi-file-medical"></i> Учёт больничных листов</h1>
+    <h1 class="mb-3">Учёт больничных листов</h1>
+    <button id="back-to-dashboard" class="back-to-dashboard">На главную</button>
 
-    <!-- Фильтры -->
+    <div id="admin-actions" class="mb-3" style="display: none;">
+        <button id="add-sick-leave-btn" class="btn btn-primary">Добавить больничный</button>
+    </div>
+
     <div class="card mb-4">
         <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label">Отдел</label>
-                    <select id="department-filter" class="form-select">
+            <div class="row justify-content-center">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label class="form-label text-center w-100">Отдел</label>
+                    <select id="department-filter" class="form-select mx-auto" style="max-width: 250px;">
                         <option value="">Все отделы</option>
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">Период</label>
-                    <input type="month" id="month-filter" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Статус</label>
-                    <select id="status-filter" class="form-select">
-                        <option value="">Все</option>
-                        <option value="ACTIVE">Активный</option>
-                        <option value="CLOSED">Закрыт</option>
-                    </select>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label class="form-label text-center w-100">Месяц</label>
+                    <input type="month" id="month-filter" class="form-control mx-auto" style="max-width: 250px;">
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Кнопки админа -->
-    <div id="admin-actions" class="mb-3" style="display: none;">
-        <button id="add-sick-leave-btn" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Добавить больничный
-        </button>
-    </div>
-
-    <!-- Таблица -->
+    <!-- Таблица больничных -->
     <div class="table-responsive">
         <table class="table table-hover">
-            <thead class="table-light">
+            <thead>
             <tr>
                 <th>Сотрудник</th>
                 <th>Отдел</th>
                 <th>Дата начала</th>
                 <th>Дата окончания</th>
                 <th>Номер документа</th>
-                <th>Статус</th>
-                <th>Действия</th>
+                <th id="action-header" style="display: none;">Действие</th>
             </tr>
             </thead>
             <tbody id="sick-leaves-table">
@@ -66,8 +54,8 @@
     </div>
 </div>
 
-<!-- Модальное окно добавления -->
-<div class="modal fade" id="sickLeaveModal" tabindex="-1">
+<!-- Модальное окно добавления больничного -->
+<div class="modal fade" id="addSickLeaveModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -77,17 +65,27 @@
             <div class="modal-body">
                 <form id="sick-leave-form">
                     <div class="mb-3">
-                        <label class="form-label">Сотрудник*</label>
-                        <select id="employee-select" class="form-select" required>
-                            <option value="">Выберите сотрудника</option>
-                        </select>
+                        <label class="form-label">Сотрудник</label>
+                        <div style="position: relative;">
+                            <input type="text" class="form-control" id="employee-search" placeholder="Поиск сотрудника..." required>
+                            <button type="button" id="clear-employee-search"
+                                    class="btn btn-sm btn-outline-secondary"
+                                    style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
+                                ✖
+                            </button>
+                        </div>
+                        <div class="users-list-container mt-2">
+                            <ul class="list-group" id="employee-users-list">
+                                <!-- Список сотрудников -->
+                            </ul>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Дата начала*</label>
+                        <label class="form-label">Дата начала</label>
                         <input type="date" id="start-date" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Дата окончания*</label>
+                        <label class="form-label">Дата окончания</label>
                         <input type="date" id="end-date" class="form-control" required>
                     </div>
                     <div class="mb-3">

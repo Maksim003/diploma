@@ -10,13 +10,12 @@ import com.example.diploma.mapper.AppealMapper;
 import com.example.diploma.repository.jpa.AppealRepository;
 import com.example.diploma.service.AppealService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +33,9 @@ public class AppealServiceImpl implements AppealService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<AppealResponse> findAll(Pageable pageable) {
-        return appealRepository.findAll(pageable).map(appealMapper::toResponse);
+    public List<AppealResponse> findAll() {
+        return appealRepository.findAll().stream()
+                .map(appealMapper::toResponse).toList();
     }
 
     @Override
@@ -46,10 +46,31 @@ public class AppealServiceImpl implements AppealService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<AppealResponse> findByUserId(Long userId) {
+        return appealRepository.findByUser_Id(userId).stream()
+                .map(appealMapper::toResponse).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AppealResponse> findByDepartmentId(Long departmentId) {
+        return appealRepository.findByUser_Department_Id(departmentId).stream()
+                .map(appealMapper::toResponse).toList();
+    }
+
+    @Override
     public Long countTodayAppeal() {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1);
-        return appealRepository.countAllByDateBetween(startOfDay, endOfDay);
+        return appealRepository.countAllByCreatedAtBetween(startOfDay, endOfDay);
+    }
+
+    @Override
+    public void confirm(Long id, String status) {
+        AppealEntity appealEntity = getByIdOrThrow(id);
+        appealEntity.setStatus(status);
+        appealRepository.save(appealEntity);
     }
 
 

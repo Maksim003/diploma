@@ -1,3 +1,4 @@
+/* Основные стили */
 body {
     background-color: #f5f7fa;
     font-family: 'Roboto', sans-serif;
@@ -148,11 +149,6 @@ h1 {
     z-index: 1000;
 }
 
-.users-list-container {
-    max-height: 200px;
-    overflow-y: auto;
-}
-
 /* Модальное окно */
 .modal-content {
     border: none;
@@ -184,11 +180,11 @@ h1 {
 }
 
 /* Форма в модальном окне */
-#incident-form .mb-3 {
+#appeal-form .mb-3 {
     margin-bottom: 1.25rem !important;
 }
 
-#incident-form label {
+#appeal-form label {
     margin-bottom: 0.5rem;
     display: block;
     font-weight: 400;
@@ -237,7 +233,7 @@ h1 {
     padding: 0.75rem 1rem;
 }
 
-#incidents-table tr {
+#appeals-table tr {
     line-height: 1.2;
 }
 
@@ -254,11 +250,6 @@ h1 {
     to {
         opacity: 1;
     }
-}
-
-.border-danger {
-    border: 1px solid #dc3545 !important;
-    border-radius: 0.25rem;
 }
 
 .table tbody tr {

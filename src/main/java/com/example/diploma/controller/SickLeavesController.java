@@ -39,6 +39,12 @@ public class SickLeavesController {
         return sickLeavesService.findByUserId(userId);
     }
 
+    @GetMapping("department/{departmentId}")
+    public List<SickLeavesResponse> findByDepartmentId(@PathVariable Long departmentId) {
+        return sickLeavesService.findByDepartmentId(departmentId);
+    }
+
+
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable Long id, @RequestBody @Valid UpdateSickLeavesRequest updateSickLeaves) {

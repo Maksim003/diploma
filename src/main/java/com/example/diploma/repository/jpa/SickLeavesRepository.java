@@ -15,4 +15,6 @@ public interface SickLeavesRepository  extends JpaRepository<SickLeavesEntity, L
 
     List<SickLeavesEntity> findByUser_Id(Long userId);
 
+    List<SickLeavesEntity> findByUser_Department_Id(Long departmentId);
+
 }

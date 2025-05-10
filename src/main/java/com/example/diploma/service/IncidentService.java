@@ -3,7 +3,6 @@ package com.example.diploma.service;
 import com.example.diploma.controller.request.incident.CreateIncidentRequest;
 import com.example.diploma.controller.request.incident.UpdateIncidentRequest;
 import com.example.diploma.controller.response.IncidentResponse;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -16,6 +15,8 @@ public interface IncidentService {
     IncidentResponse findById(Long id);
 
     List<IncidentResponse> findByUserId(Long userId);
+
+    List<IncidentResponse> findByDepartmentId(Long departmentId);
 
     Long countAllToday();
 

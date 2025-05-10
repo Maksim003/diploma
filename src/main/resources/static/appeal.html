@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Учёт обращений</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/css/appeal.css"/>
+</head>
+<body>
+<div class="container py-4">
+    <h1 class="mb-3">Учёт обращений</h1>
+    <button id="back-to-dashboard" class="back-to-dashboard">На главную</button>
+
+    <!-- Кнопка добавления (для user, head, engineer) -->
+    <div id="user-actions" class="mb-3" style="display: none;">
+        <button id="add-appeal-btn" class="btn btn-primary">Создать обращение</button>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row justify-content-center">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label class="form-label text-center w-100">Отдел</label>
+                    <select id="department-filter" class="form-select mx-auto" style="max-width: 250px;">
+                        <option value="">Все отделы</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-center w-100">Статус</label>
+                    <select id="status-filter" class="form-select mx-auto" style="max-width: 250px;">
+                        <option value="">Все статусы</option>
+                        <option value="PENDING">На рассмотрении</option>
+                        <option value="RESOLVED">Решённый</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Таблица обращений -->
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Сотрудник</th>
+                <th>Отдел</th>
+                <th>Дата и время</th>
+                <th>Тема</th>
+                <th>Описание</th>
+                <th>Статус</th>
+                <th id="action-header" style="display: none;">Действия</th>
+            </tr>
+            </thead>
+            <tbody id="appeals-table">
+            <!-- Данные будут загружены через JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Модальное окно добавления обращения -->
+<div class="modal fade" id="addAppealModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Создать обращение</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="appeal-form">
+                    <div class="mb-3">
+                        <label class="form-label">Тема*</label>
+                        <input type="text" class="form-control" id="appeal-subject" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание*</label>
+                        <textarea id="appeal-description" class="form-control" rows="5" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="save-appeal">Отправить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения -->
+<div class="modal fade" id="confirmAppealModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтверждение обращения</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите отметить это обращение как решённое?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-success" id="confirm-appeal">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="/js/appeal.js"></script>
+</body>
+</html>

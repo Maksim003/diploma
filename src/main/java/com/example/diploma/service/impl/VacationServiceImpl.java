@@ -11,7 +11,6 @@ import com.example.diploma.mapper.VacationMapper;
 import com.example.diploma.repository.jpa.VacationRepository;
 import com.example.diploma.service.VacationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,8 +46,16 @@ public class VacationServiceImpl implements VacationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<VacationResponse> findByUserId(Long userId) {
         return vacationRepository.findByUser_Id(userId).stream()
+                .map(vacationMapper::toResponse).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VacationResponse> findByDepartmentId(Long departmentId) {
+        return vacationRepository.findByUser_Department_Id(departmentId).stream()
                 .map(vacationMapper::toResponse).toList();
     }
 

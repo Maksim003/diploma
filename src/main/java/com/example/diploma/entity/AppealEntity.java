@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "appeals")
 @Getter
@@ -16,26 +14,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AppealEntity extends BaseEntity<Long> {
 
-    @Column(name = "date")
-    private LocalDateTime date;
-
     @Column(name = "subject")
     public String subject;
 
     @Column(name = "description")
     private String description;
 
-    @Column(name = "answer")
-    private String answer;
+    @Column(name = "status")
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity creator;
+    private UserEntity user;
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[id=" + getId() + ", date=" + date + ", subject=" + subject
-                + ", description=" + description + ", answer=" + answer + "]";
+        return this.getClass().getSimpleName() + "[id=" + getId() + ", subject=" + subject
+                + ", description=" + description + ", status=" + status + "]";
     }
 
 }

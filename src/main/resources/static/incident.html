@@ -1,3 +1,112 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="ru">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Учёт инцидентов</title>-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">-->
+<!--    <link rel="stylesheet" href="/css/incident.css">-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container py-4">-->
+<!--    <h1 class="mb-4"><i class="bi bi-exclamation-triangle"></i> Учёт инцидентов</h1>-->
+
+<!--    &lt;!&ndash; Фильтры &ndash;&gt;-->
+<!--    <div class="card mb-4">-->
+<!--        <div class="card-body">-->
+<!--            <div class="row g-3">-->
+<!--                <div class="col-md-4">-->
+<!--                    <label class="form-label">Отдел</label>-->
+<!--                    <select id="department-filter" class="form-select">-->
+<!--                        <option value="">Все отделы</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+<!--                <div class="col-md-4">-->
+<!--                    <label class="form-label">Месяц</label>-->
+<!--                    <input type="month" id="month-filter" class="form-control">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Кнопки админа &ndash;&gt;-->
+<!--    <div id="admin-actions" class="mb-3" style="display: none;">-->
+<!--        <button id="add-incident-btn" class="btn btn-primary">-->
+<!--            <i class="bi bi-plus-circle"></i> Добавить инцидент-->
+<!--        </button>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Таблица инцидентов &ndash;&gt;-->
+<!--    <div class="table-responsive">-->
+<!--        <table class="table">-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--                <th>Участники</th>-->
+<!--                <th>Дата и время</th>-->
+<!--                <th>Тип</th>-->
+<!--                <th>Описание</th>-->
+<!--                <th>Принятые меры</th>-->
+<!--                <th>Действия</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody id="incidents-table">-->
+<!--            &lt;!&ndash; Данные будут загружены через JS &ndash;&gt;-->
+<!--            </tbody>-->
+<!--        </table>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Модальное окно добавления инцидента &ndash;&gt;-->
+<!--<div class="modal fade" id="incidentModal" tabindex="-1">-->
+<!--    <div class="modal-dialog modal-lg">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title">Новый инцидент</h5>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <form id="incident-form">-->
+<!--                    <div class="row g-3">-->
+<!--                        <div class="col-md-6">-->
+<!--                            <label class="form-label">Сотрудник*</label>-->
+<!--                            <select id="employee-select" class="form-select" required>-->
+<!--                                <option value="">Выберите сотрудника</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-6">-->
+<!--                            <label class="form-label">Дата и время*</label>-->
+<!--                            <input type="datetime-local" id="incident-date" class="form-control" required>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-6">-->
+<!--                            <label class="form-label">Тип инцидента*</label>-->
+<!--                            <select id="incident-type" class="form-select" required>-->
+<!--                                <option value="">Выберите тип</option>-->
+<!--                                <option value="INJURY">Травма</option>-->
+<!--                                <option value="EQUIPMENT">Поломка оборудования</option>-->
+<!--                                <option value="OTHER">Другое</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                        <div class="col-12">-->
+<!--                            <label class="form-label">Описание</label>-->
+<!--                            <textarea id="incident-description" class="form-control" rows="3"></textarea>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>-->
+<!--                <button type="button" class="btn btn-primary" id="save-incident">Сохранить</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+<!--<script type="module" src="/js/incident.js"></script>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -10,30 +119,22 @@
 </head>
 <body>
 <div class="container py-4">
-    <h1 class="mb-4"><i class="bi bi-exclamation-triangle"></i> Учёт инцидентов</h1>
+    <h1 class="mb-4">Учёт инцидентов</h1>
+    <button id="back-to-dashboard" class="back-to-dashboard">На главную</button>
 
     <!-- Фильтры -->
     <div class="card mb-4">
         <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label">Отдел</label>
-                    <select id="department-filter" class="form-select">
+            <div class="row justify-content-center">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label class="form-label text-center w-100">Отдел</label>
+                    <select id="department-filter" class="form-select mx-auto" style="max-width: 250px;">
                         <option value="">Все отделы</option>
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Период</label>
-                    <input type="month" id="month-filter" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Тип инцидента</label>
-                    <select id="type-filter" class="form-select">
-                        <option value="">Все типы</option>
-                        <option value="INJURY">Травма</option>
-                        <option value="EQUIPMENT">Поломка оборудования</option>
-                        <option value="OTHER">Другое</option>
-                    </select>
+                    <label class="form-label text-center w-100">Месяц</label>
+                    <input type="month" id="month-filter" class="form-control mx-auto" style="max-width: 250px;">
                 </div>
             </div>
         </div>
@@ -41,22 +142,21 @@
 
     <!-- Кнопки админа -->
     <div id="admin-actions" class="mb-3" style="display: none;">
-        <button id="add-incident-btn" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Добавить инцидент
-        </button>
+        <button id="add-incident-btn" class="btn btn-primary">Добавить инцидент</button>
     </div>
 
     <!-- Таблица инцидентов -->
     <div class="table-responsive">
-        <table class="table">
+        <table class="table table-hover">
             <thead>
             <tr>
-                <th>Сотрудник</th>
+                <th>Участники</th>
+                <th>Отдел</th>
                 <th>Дата и время</th>
                 <th>Тип</th>
                 <th>Описание</th>
-                <th>Статус</th>
-                <th>Действия</th>
+                <th>Принятые меры</th>
+                <th id="action-header" style="display: none;">Действия</th>
             </tr>
             </thead>
             <tbody id="incidents-table">
@@ -67,47 +167,66 @@
 </div>
 
 <!-- Модальное окно добавления инцидента -->
-<div class="modal fade" id="incidentModal" tabindex="-1">
+<div class="modal fade" id="addIncidentModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Новый инцидент</h5>
+                <h5 class="modal-title">Добавить инцидент</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="incident-form">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Сотрудник*</label>
-                            <select id="employee-select" class="form-select" required>
-                                <option value="">Выберите сотрудника</option>
-                            </select>
+                    <div class="mb-3">
+                        <label class="form-label">Участники</label>
+                        <div style="position: relative;">
+                            <input type="text" class="form-control" id="employee-search" placeholder="Поиск сотрудников...">
+                            <button type="button" id="clear-employee-search"
+                                    class="btn btn-sm btn-outline-secondary"
+                                    style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
+                                ✖
+                            </button>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Дата и время*</label>
-                            <input type="datetime-local" id="incident-date" class="form-control" required>
+                        <div class="users-list-container mt-2">
+                            <ul class="list-group" id="employee-users-list">
+                                <!-- Список сотрудников -->
+                            </ul>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Тип инцидента*</label>
-                            <select id="incident-type" class="form-select" required>
-                                <option value="">Выберите тип</option>
-                                <option value="INJURY">Травма</option>
-                                <option value="EQUIPMENT">Поломка оборудования</option>
-                                <option value="OTHER">Другое</option>
-                            </select>
+                        <div class="mt-2">
+                            <h6>Выбранные участники:</h6>
+                            <ul id="selected-employees-list" class="list-group">
+                                <!-- Выбранные сотрудники будут здесь -->
+                            </ul>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Статус</label>
-                            <select id="incident-status" class="form-select">
-                                <option value="REPORTED">Зарегистрирован</option>
-                                <option value="INVESTIGATION">На рассмотрении</option>
-                                <option value="RESOLVED">Решён</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Описание</label>
-                            <textarea id="incident-description" class="form-control" rows="3"></textarea>
-                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Дата и время</label>
+                        <input type="datetime-local" id="incident-date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Тип инцидента</label>
+                        <select id="incident-type" class="form-select" required>
+                            <option value="">Выберите тип</option>
+                            <option value="INJURY">Травма</option>
+                            <option value="EQUIPMENT_FAILURE">Поломка оборудования</option>
+                            <option value="SAFETY_VIOLATION">Нарушение техники безопасности</option>
+                            <option value="FIRE_HAZARD">Пожарная опасность</option>
+                            <option value="MATERIAL_SPILL">Разлив химических веществ</option>
+                            <option value="GAS_LEAK">Утечка газа</option>
+                            <option value="HEALTH_ISSUE">Ухудшение здоровья</option>
+                            <option value="SECURITY_BREACH">Нарушение режима безопасности</option>
+                            <option value="ENVIRONMENTAL">Экологический инцидент</option>
+                            <option value="PROCESS_FAILURE">Нарушение технологического процесса</option>
+                            <option value="TRANSPORT_INCIDENT">Транспортное происшествие</option>
+                            <option value="FALL_FROM_HEIGHT">Падение с высоты</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание</label>
+                        <textarea id="incident-description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Принятые меры</label>
+                        <textarea id="incident-measures" class="form-control" rows="3"></textarea>
                     </div>
                 </form>
             </div>

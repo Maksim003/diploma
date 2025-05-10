@@ -6,8 +6,6 @@ import com.example.diploma.controller.response.VacationResponse;
 import com.example.diploma.service.VacationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +33,12 @@ public class VacationController {
     public VacationResponse findById(@PathVariable Long id) {
         return vacationService.findById(id);
     }
+
+    @GetMapping("department/{departmentId}")
+    public List<VacationResponse> findByDepartmentId(@PathVariable Long departmentId) {
+        return vacationService.findByDepartmentId(departmentId);
+    }
+
 
     @GetMapping("user/{userId}")
     public List<VacationResponse> findByUserId(@PathVariable Long userId) {

@@ -16,6 +16,8 @@ public interface SickLeavesService {
 
     List<SickLeavesResponse> findByUserId(Long userId);
 
+    List<SickLeavesResponse> findByDepartmentId(Long departmentId);
+
     Long countActive();
 
     void update(Long id, UpdateSickLeavesRequest updateSickLeaves);

@@ -3,7 +3,6 @@ package com.example.diploma.service;
 import com.example.diploma.controller.request.vacation.CreateVacationRequest;
 import com.example.diploma.controller.request.vacation.UpdateVacationRequest;
 import com.example.diploma.controller.response.VacationResponse;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -16,6 +15,8 @@ public interface VacationService {
     VacationResponse findById(Long id);
 
     List<VacationResponse> findByUserId(Long userId);
+
+    List<VacationResponse> findByDepartmentId(Long departmentId);
 
     Long countActive();
 

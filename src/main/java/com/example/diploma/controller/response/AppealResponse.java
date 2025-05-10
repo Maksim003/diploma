@@ -8,6 +8,6 @@ public record AppealResponse(
         LocalDateTime date,
         String subject,
         String description,
-        String answer
+        String status
 ) {
 }

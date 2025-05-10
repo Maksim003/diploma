@@ -1,92 +1,166 @@
-document.addEventListener('DOMContentLoaded', async function() {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
+import {fetchWithAuth} from './auth.js';
+
+document.addEventListener('DOMContentLoaded', async function () {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
         window.location.href = '/login.html';
         return;
     }
 
-    // Элементы
+    document.getElementById('back-to-dashboard').addEventListener('click', () => {
+        window.location.href = '/dashboard.html';
+    });
+
     const addSickLeaveBtn = document.getElementById('add-sick-leave-btn');
     const saveSickLeaveBtn = document.getElementById('save-sick-leave');
     const departmentFilter = document.getElementById('department-filter');
     const monthFilter = document.getElementById('month-filter');
-    const statusFilter = document.getElementById('status-filter');
-    const employeeSelect = document.getElementById('employee-select');
+    const employeeSearchInput = document.getElementById('employee-search');
+    const clearEmployeeSearchBtn = document.getElementById('clear-employee-search');
+    const employeeListContainer = document.getElementById('employee-users-list');
 
-    // Инициализация
-    const currentUser = await fetchCurrentUser();
-    if (currentUser.roles.includes('ADMIN') || currentUser.roles.includes('HR')) {
+    let currentUser = null;
+    let allEmployees = [];
+    let selectedEmployee = null;
+
+    await fetchWithAuth();
+    await loadCurrentUser();
+    currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    if (currentUser.role.includes('ADMIN') || currentUser.role.includes('HR')) {
         document.getElementById('admin-actions').style.display = 'block';
+        addSickLeaveBtn.addEventListener('click', showAddSickLeaveModal);
+        saveSickLeaveBtn.addEventListener('click', saveSickLeave);
+    } else {
+        document.getElementById('admin-actions').style.display = 'none';
+
+        if (currentUser.role.includes('HEAD') || currentUser.role.includes('ENGINEER') || currentUser.role.includes('USER')) {
+            document.getElementById('department-filter').style.display = 'none';
+        }
     }
 
     await loadDepartments();
     await loadEmployees();
     await loadSickLeaves();
 
-    // События
-    addSickLeaveBtn.addEventListener('click', showAddSickLeaveModal);
-    saveSickLeaveBtn.addEventListener('click', saveSickLeave);
-    departmentFilter.addEventListener('change', loadSickLeaves);
-    monthFilter.addEventListener('change', loadSickLeaves);
-    statusFilter.addEventListener('change', loadSickLeaves);
+    let debounceTimeout;
 
-    // ===== ФУНКЦИИ =====
+    function debounceFilters() {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(loadSickLeaves, 300);
+    }
 
-    async function fetchCurrentUser() {
-        const response = await fetch('/api/auth/current-user', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        return await response.json();
+    departmentFilter.addEventListener('change', debounceFilters);
+    monthFilter.addEventListener('change', debounceFilters);
+
+    async function loadCurrentUser() {
+        try {
+            const res = await fetch('http://127.0.0.1:8080/users/current-user', {
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка загрузки пользователя');
+            const user = await res.json();
+            localStorage.setItem('currentUser', JSON.stringify(user));
+        } catch (error) {
+            console.error('Ошибка загрузки пользователя:', error);
+            window.location.href = '/login.html';
+        }
     }
 
     async function loadDepartments() {
-        const response = await fetch('/api/departments', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const departments = await response.json();
+        try {
+            const res = await fetch('http://127.0.0.1:8080/departments', {
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка загрузки отделов');
+            const departments = await res.json();
 
-        departmentFilter.innerHTML = '<option value="">Все отделы</option>';
-        departments.forEach(dept => {
-            const option = document.createElement('option');
-            option.value = dept.id;
-            option.textContent = dept.name;
-            departmentFilter.appendChild(option);
-        });
+            departmentFilter.innerHTML = '<option value="">Все отделы</option>';
+            departments.forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept.id;
+                option.textContent = dept.name;
+                departmentFilter.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Ошибка загрузки отделов:', error);
+        }
     }
 
     async function loadEmployees() {
-        const response = await fetch('/api/users', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const employees = await response.json();
+        try {
+            const res = await fetch('http://127.0.0.1:8080/users', {
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка загрузки сотрудников');
+            allEmployees = await res.json();
 
-        employeeSelect.innerHTML = '<option value="">Выберите сотрудника</option>';
+            renderEmployeeList(allEmployees);
+        } catch (error) {
+            console.error('Ошибка загрузки сотрудников:', error);
+        }
+    }
+
+    function renderEmployeeList(employees) {
+        employeeListContainer.innerHTML = '';
+
+        if (employees.length === 0) {
+            employeeListContainer.innerHTML = '<li class="list-group-item text-muted">Сотрудники не найдены</li>';
+            return;
+        }
+
         employees.forEach(emp => {
-            const option = document.createElement('option');
-            option.value = emp.id;
-            option.textContent = `${emp.fullName} (${emp.department?.name || '-'})`;
-            employeeSelect.appendChild(option);
+            const li = document.createElement('li');
+            li.className = `list-group-item list-group-item-action ${selectedEmployee?.id === emp.id ? 'active' : ''}`;
+            li.textContent = `${emp.fullName} (${emp.departmentName || '-'})`;
+            li.addEventListener('click', () => {
+                selectedEmployee = emp;
+                employeeSearchInput.value = emp.fullName;
+                renderEmployeeList(employees);
+            });
+            employeeListContainer.appendChild(li);
         });
     }
+
+    employeeSearchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allEmployees.filter(emp =>
+            emp.fullName.toLowerCase().includes(term)
+        );
+        renderEmployeeList(filtered);
+    });
+
+    clearEmployeeSearchBtn.addEventListener('click', () => {
+        employeeSearchInput.value = '';
+        selectedEmployee = null;
+        renderEmployeeList(allEmployees);
+    });
 
     async function loadSickLeaves() {
         const departmentId = departmentFilter.value;
         const month = monthFilter.value;
-        const status = statusFilter.value;
 
-        let url = '/api/sick-leaves?';
-        if (departmentId) url += `departmentId=${departmentId}&`;
-        if (month) url += `month=${month}&`;
-        if (status) url += `status=${status}`;
+        let url = 'http://127.0.0.1:8080/sick-leaves?';
+
+        if (currentUser.role.includes('ENGINEER') || currentUser.role.includes('USER')) {
+            url = `http://127.0.0.1:8080/sick-leaves/user/${currentUser.id}`;
+        } else if (currentUser.role.includes('HEAD')) {
+            url = `http://127.0.0.1:8080/sick-leaves/department/${currentUser.departmentId}`;
+        } else {
+            if (departmentId) url += `departmentId=${departmentId}&`;
+            if (month) url += `month=${month}`;
+        }
 
         try {
-            const response = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${token}` }
+            const res = await fetch(url, {
+                headers: {'Authorization': `Bearer ${accessToken}`}
             });
-            const sickLeaves = await response.json();
+            if (!res.ok) throw new Error('Ошибка загрузки больничных');
+            const sickLeaves = await res.json();
             renderSickLeavesTable(sickLeaves);
         } catch (error) {
             console.error('Ошибка загрузки больничных:', error);
+            renderSickLeavesTable([]);
         }
     }
 
@@ -94,43 +168,85 @@ document.addEventListener('DOMContentLoaded', async function() {
         const tbody = document.getElementById('sick-leaves-table');
         tbody.innerHTML = '';
 
+        const actionHeader = document.getElementById('action-header');
+        actionHeader.style.display =
+            (currentUser.role.includes('ADMIN') || currentUser.role.includes('HR'))
+                ? 'table-cell'
+                : 'none';
+
         if (sickLeaves.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4">Нет данных о больничных</td></tr>`;
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Нет данных о больничных</td></tr>';
             return;
         }
 
-        sickLeaves.forEach(sickLeave => {
+        sickLeaves.forEach(sick => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${sickLeave.employeeFullName}</td>
-                <td>${sickLeave.departmentName || '-'}</td>
-                <td>${formatDate(sickLeave.startDate)}</td>
-                <td>${formatDate(sickLeave.endDate)}</td>
-                <td>${sickLeave.documentNumber || '-'}</td>
-                <td><span class="badge ${getStatusClass(sickLeave.status)}">${getStatusName(sickLeave.status)}</span></td>
-                <td>
-                    ${currentUser.roles.includes('ADMIN') || currentUser.roles.includes('HR')
-                ? `<button class="btn btn-sm btn-outline-primary edit-btn" data-id="${sickLeave.id}">
-                              <i class="bi bi-pencil"></i>
-                           </button>`
-                : ''}
-                </td>
-            `;
+            <td style="${(currentUser.role.includes('HEAD') && sick.user.id === currentUser.id) ? 'color: green; font-weight: bold;' : ''}">
+    ${sick.user.fullName}</td>
+            <td>${sick.user.departmentName || '-'}</td>
+            <td>${formatDate(sick.startDate)}</td>
+            <td>${formatDate(sick.endDate)}</td>
+            <td>${sick.documentNumber}</td>
+        `;
+
+            if (currentUser.role.includes('ADMIN') || currentUser.role.includes('HR')) {
+                const td = document.createElement('td');
+                td.className = 'action-cell';
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-sm btn-danger';
+                deleteBtn.textContent = 'Удалить';
+                deleteBtn.addEventListener('click', () => deleteSickLeave(sick.id));
+                td.appendChild(deleteBtn);
+                row.appendChild(td);
+            }
+
             tbody.appendChild(row);
         });
     }
 
-    function showAddSickLeaveModal() {
-        const modal = new bootstrap.Modal(document.getElementById('sickLeaveModal'));
-        document.getElementById('sick-leave-form').reset();
+    async function deleteSickLeave(id) {
+        if (!confirm('Вы уверены, что хотите удалить запись о больничном?')) return;
 
-        // Установим минимальную дату (сегодня)
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('start-date').min = today;
-        document.getElementById('end-date').min = today;
+        try {
+            const res = await fetch(`http://127.0.0.1:8080/sick-leaves/${id}`, {
+                method: 'DELETE',
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка удаления больничного');
+            await loadSickLeaves();
+        } catch (error) {
+            console.error('Ошибка удаления больничного:', error);
+            alert('Не удалось удалить больничный');
+        }
+    }
+
+    function showAddSickLeaveModal() {
+        const modal = new bootstrap.Modal(document.getElementById('addSickLeaveModal'));
+        document.getElementById('sick-leave-form').reset();
+        selectedEmployee = null;
+        employeeSearchInput.value = '';
+        renderEmployeeList(allEmployees);
+
+        const today = new Date();
+
+        const oneYearAgo = new Date(today);
+        oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+        const oneYearAhead = new Date(today);
+        oneYearAhead.setFullYear(today.getFullYear() + 1);
+
+        const minDateStr = oneYearAgo.toISOString().split('T')[0];
+        const maxDateStr = oneYearAhead.toISOString().split('T')[0];
+
+        document.getElementById('start-date').min = minDateStr;
+        document.getElementById('start-date').max = maxDateStr;
+        document.getElementById('end-date').min = minDateStr;
+        document.getElementById('end-date').max = maxDateStr;
 
         modal.show();
     }
+
 
     async function saveSickLeave() {
         const form = document.getElementById('sick-leave-form');
@@ -139,53 +255,55 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
         }
 
-        const sickLeaveData = {
-            user: parseInt(employeeSelect.value),
+        const startDate = new Date(document.getElementById('start-date').value);
+        const endDate = new Date(document.getElementById('end-date').value);
+
+        if (endDate <= startDate) {
+            alert('Дата окончания должна быть позже даты начала!');
+            return;
+        }
+
+        const timeDifference = (endDate - startDate) / (1000 * 3600 * 24);
+        if (timeDifference > 15) {
+            alert('Продолжительность отпуска не может превышать 15 дней!');
+            return;
+        }
+
+        if (!selectedEmployee?.id) {
+            alert('Выберите сотрудника из списка!');
+            return;
+        }
+
+        const data = {
+            user: selectedEmployee.id,
             startDate: document.getElementById('start-date').value,
             endDate: document.getElementById('end-date').value,
-            documentNumber: document.getElementById('document-number').value || null,
-            status: "ACTIVE" // По умолчанию "Активный"
+            documentNumber: document.getElementById('document-number').value
+
         };
 
         try {
-            const response = await fetch('/api/sick-leaves', {
+            const res = await fetch('http://127.0.0.1:8080/sick-leaves', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${accessToken}`
                 },
-                body: JSON.stringify(sickLeaveData)
+                body: JSON.stringify(data)
             });
 
-            if (!response.ok) throw new Error('Ошибка сохранения');
+            if (!res.ok) throw new Error('Ошибка добавления больничного');
 
-            bootstrap.Modal.getInstance(document.getElementById('sickLeaveModal')).hide();
+            bootstrap.Modal.getInstance(document.getElementById('addSickLeaveModal')).hide();
+            form.classList.remove('was-validated');
             await loadSickLeaves();
         } catch (error) {
-            console.error('Ошибка:', error);
-            alert('Не удалось сохранить больничный лист');
+            console.error('Ошибка добавления больничного:', error);
+            alert('Не удалось сохранить больничный');
         }
     }
-
-    // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
 
     function formatDate(dateString) {
         return new Date(dateString).toLocaleDateString('ru-RU');
-    }
-
-    function getStatusClass(status) {
-        switch(status) {
-            case 'ACTIVE': return 'bg-active';
-            case 'CLOSED': return 'bg-closed';
-            default: return 'bg-secondary';
-        }
-    }
-
-    function getStatusName(status) {
-        switch(status) {
-            case 'ACTIVE': return 'Активный';
-            case 'CLOSED': return 'Закрыт';
-            default: return status;
-        }
     }
 });

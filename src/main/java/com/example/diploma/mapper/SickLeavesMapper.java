@@ -19,7 +19,6 @@ public class SickLeavesMapper {
         sickLeavesEntity.setStartDate(createSickLeaves.startDate());
         sickLeavesEntity.setEndDate(createSickLeaves.endDate());
         sickLeavesEntity.setDocumentNumber(createSickLeaves.documentNumber());
-        sickLeavesEntity.setStatus(createSickLeaves.status());
         UserEntity userEntity = new UserEntity(createSickLeaves.user());
         sickLeavesEntity.setUser(userEntity);
         return sickLeavesEntity;
@@ -29,7 +28,6 @@ public class SickLeavesMapper {
         sickLeavesEntity.setStartDate(updateRequest.startDate());
         sickLeavesEntity.setEndDate(updateRequest.endDate());
         sickLeavesEntity.setDocumentNumber(updateRequest.documentNumber());
-        sickLeavesEntity.setStatus(updateRequest.status());
     }
 
     public SickLeavesResponse toResponse(SickLeavesEntity sickLeavesEntity) {
@@ -38,8 +36,7 @@ public class SickLeavesMapper {
                 fullnameMapper.toResponse(sickLeavesEntity.getUser()),
                 sickLeavesEntity.getStartDate(),
                 sickLeavesEntity.getEndDate(),
-                sickLeavesEntity.getDocumentNumber(),
-                sickLeavesEntity.getStatus()
+                sickLeavesEntity.getDocumentNumber()
         );
     }
 

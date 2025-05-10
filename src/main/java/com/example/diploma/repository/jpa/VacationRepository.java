@@ -14,4 +14,6 @@ public interface VacationRepository extends JpaRepository<VacationEntity, Long> 
     Long countActiveOnDate(@Param("date") LocalDate date);
 
     List<VacationEntity> findByUser_Id(Long userId);
+
+    List<VacationEntity> findByUser_Department_Id(Long departmentId);
 }

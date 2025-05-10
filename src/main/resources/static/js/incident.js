@@ -1,89 +1,202 @@
-document.addEventListener('DOMContentLoaded', async function() {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) window.location.href = '/login.html';
+import {fetchWithAuth} from './auth.js';
 
-    // Элементы
+document.addEventListener('DOMContentLoaded', async function () {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+        window.location.href = '/login.html';
+        return;
+    }
+
+    document.getElementById('back-to-dashboard').addEventListener('click', () => {
+        window.location.href = '/dashboard.html';
+    });
+
     const addIncidentBtn = document.getElementById('add-incident-btn');
     const saveIncidentBtn = document.getElementById('save-incident');
     const departmentFilter = document.getElementById('department-filter');
     const monthFilter = document.getElementById('month-filter');
-    const typeFilter = document.getElementById('type-filter');
-    const employeeSelect = document.getElementById('employee-select');
+    const employeeSearchInput = document.getElementById('employee-search');
+    const clearEmployeeSearchBtn = document.getElementById('clear-employee-search');
+    const employeeListContainer = document.getElementById('employee-users-list');
 
-    // Инициализация
-    const currentUser = await fetchCurrentUser();
-    if (currentUser.roles.includes('ADMIN') || currentUser.roles.includes('HR')) {
+    let currentUser = null;
+    let allEmployees = [];
+    let selectedEmployees = [];
+
+    await fetchWithAuth();
+    await loadCurrentUser();
+    currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    if (currentUser.role.includes('ADMIN') || currentUser.role.includes('HR') || currentUser.role.includes('ENGINEER')) {
         document.getElementById('admin-actions').style.display = 'block';
+        addIncidentBtn.addEventListener('click', showAddIncidentModal);
+        saveIncidentBtn.addEventListener('click', saveIncident);
+    } else {
+        document.getElementById('admin-actions').style.display = 'none';
+
+        if (currentUser.role.includes('HEAD') || currentUser.role.includes('USER')) {
+            document.getElementById('department-filter').style.display = 'none';
+        }
     }
 
     await loadDepartments();
     await loadEmployees();
     await loadIncidents();
 
-    // События
-    addIncidentBtn.addEventListener('click', showAddIncidentModal);
-    saveIncidentBtn.addEventListener('click', saveIncident);
-    departmentFilter.addEventListener('change', loadIncidents);
-    monthFilter.addEventListener('change', loadIncidents);
-    typeFilter.addEventListener('change', loadIncidents);
+    let debounceTimeout;
 
-    // ===== ОСНОВНЫЕ ФУНКЦИИ =====
+    function debounceFilters() {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(loadIncidents, 300);
+    }
 
-    async function fetchCurrentUser() {
-        const response = await fetch('/api/auth/current-user', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        return await response.json();
+    departmentFilter.addEventListener('change', debounceFilters);
+    monthFilter.addEventListener('change', debounceFilters);
+
+    async function loadCurrentUser() {
+        try {
+            const res = await fetch('http://127.0.0.1:8080/users/current-user', {
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка загрузки пользователя');
+            const user = await res.json();
+            localStorage.setItem('currentUser', JSON.stringify(user));
+        } catch (error) {
+            console.error('Ошибка загрузки пользователя:', error);
+            window.location.href = '/login.html';
+        }
     }
 
     async function loadDepartments() {
-        const response = await fetch('/api/departments', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const departments = await response.json();
+        try {
+            const res = await fetch('http://127.0.0.1:8080/departments', {
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка загрузки отделов');
+            const departments = await res.json();
 
-        departmentFilter.innerHTML = '<option value="">Все отделы</option>';
-        departments.forEach(dept => {
-            const option = document.createElement('option');
-            option.value = dept.id;
-            option.textContent = dept.name;
-            departmentFilter.appendChild(option);
-        });
+            departmentFilter.innerHTML = '<option value="">Все отделы</option>';
+            departments.forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept.id;
+                option.textContent = dept.name;
+                departmentFilter.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Ошибка загрузки отделов:', error);
+        }
     }
 
     async function loadEmployees() {
-        const response = await fetch('/api/users', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const employees = await response.json();
+        try {
+            const res = await fetch('http://127.0.0.1:8080/users', {
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка загрузки сотрудников');
+            allEmployees = await res.json();
+            renderEmployeeList(allEmployees);
+        } catch (error) {
+            console.error('Ошибка загрузки сотрудников:', error);
+        }
+    }
 
-        employeeSelect.innerHTML = '<option value="">Выберите сотрудника</option>';
+    function renderEmployeeList(employees) {
+        employeeListContainer.innerHTML = '';
+
+        if (employees.length === 0) {
+            employeeListContainer.innerHTML = '<li class="list-group-item text-muted">Сотрудники не найдены</li>';
+            return;
+        }
+
         employees.forEach(emp => {
-            const option = document.createElement('option');
-            option.value = emp.id;
-            option.textContent = `${emp.fullName} (${emp.department?.name || '-'})`;
-            employeeSelect.appendChild(option);
+            if (selectedEmployees.some(e => e.id === emp.id)) return;
+
+            const li = document.createElement('li');
+            li.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+                ${emp.fullName} (${emp.departmentName || '-'})
+                <button type="button" class="btn btn-sm btn-success add-employee-btn">
+                    <i class="bi bi-plus"></i> Добавить
+                </button>
+            `;
+
+            li.querySelector('.add-employee-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!selectedEmployees.some(e => e.id === emp.id)) {
+                    selectedEmployees.push(emp);
+                    renderSelectedEmployeesList();
+                    renderEmployeeList(allEmployees.filter(e => !selectedEmployees.some(se => se.id === e.id)));
+                }
+            });
+
+            employeeListContainer.appendChild(li);
         });
     }
+
+    function renderSelectedEmployeesList() {
+        const selectedList = document.getElementById('selected-employees-list');
+        selectedList.innerHTML = '';
+
+        selectedEmployees.forEach((emp, index) => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+                ${emp.fullName} (${emp.departmentName || '-'})
+                <button type="button" class="btn btn-sm btn-danger remove-employee-btn">
+                    <i class="bi bi-x"></i>
+                </button>
+            `;
+
+            li.querySelector('.remove-employee-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectedEmployees.splice(index, 1);
+                renderSelectedEmployeesList();
+                renderEmployeeList(allEmployees.filter(e => !selectedEmployees.some(se => se.id === e.id)));
+            });
+
+            selectedList.appendChild(li);
+        });
+    }
+
+    employeeSearchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allEmployees.filter(emp =>
+            emp.fullName.toLowerCase().includes(term) &&
+            !selectedEmployees.some(se => se.id === emp.id)
+        );
+        renderEmployeeList(filtered);
+    });
+
+    clearEmployeeSearchBtn.addEventListener('click', () => {
+        employeeSearchInput.value = '';
+        renderEmployeeList(allEmployees.filter(e => !selectedEmployees.some(se => se.id === e.id)));
+    });
 
     async function loadIncidents() {
         const departmentId = departmentFilter.value;
         const month = monthFilter.value;
-        const type = typeFilter.value;
 
-        let url = '/api/incidents?';
-        if (departmentId) url += `departmentId=${departmentId}&`;
-        if (month) url += `month=${month}&`;
-        if (type) url += `type=${type}`;
+        let url = 'http://127.0.0.1:8080/incidents?';
+
+        if (currentUser.role.includes('USER')) {
+            url = `http://127.0.0.1:8080/incidents/user/${currentUser.id}`;
+        } else if (currentUser.role.includes('HEAD')) {
+            url = `http://127.0.0.1:8080/incidents/department/${currentUser.departmentId}`;
+        } else {
+            if (departmentId) url += `departmentId=${departmentId}&`;
+            if (month) url += `month=${month}`;
+        }
 
         try {
-            const response = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${token}` }
+            const res = await fetch(url, {
+                headers: {'Authorization': `Bearer ${accessToken}`}
             });
-            const incidents = await response.json();
+            if (!res.ok) throw new Error('Ошибка загрузки инцидентов');
+            const incidents = await res.json();
             renderIncidentsTable(incidents);
         } catch (error) {
             console.error('Ошибка загрузки инцидентов:', error);
+            renderIncidentsTable([]);
         }
     }
 
@@ -91,109 +204,221 @@ document.addEventListener('DOMContentLoaded', async function() {
         const tbody = document.getElementById('incidents-table');
         tbody.innerHTML = '';
 
+        const actionHeader = document.getElementById('action-header');
+        actionHeader.style.display =
+            (currentUser.role.includes('ADMIN') || currentUser.role.includes('HR') || currentUser.role.includes('ENGINEER'))
+                ? 'table-cell'
+                : 'none';
+
         if (incidents.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4">Нет данных об инцидентах</td></tr>`;
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">Нет данных об инцидентах</td></tr>';
             return;
         }
 
         incidents.forEach(incident => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${incident.employeeFullName}</td>
+                <td>${incident.users.map(u => {
+                if (u.id === currentUser.id) {
+                    return `<span style="color: green; font-weight: bold;">${u.fullName}</span>`;
+                }
+                return u.fullName;
+            }).join(', ')}
+                </td>
+                <td>${incident.users[0]?.departmentName || '-'}</td>
                 <td>${formatDateTime(incident.date)}</td>
                 <td>${getIncidentTypeName(incident.type)}</td>
                 <td>${incident.description || '-'}</td>
-                <td><span class="badge ${getStatusClass(incident.status)}">${getStatusName(incident.status)}</span></td>
-                <td>
-                    ${currentUser.roles.includes('ADMIN') || currentUser.roles.includes('HR')
-                ? `<button class="btn btn-sm btn-outline-primary edit-btn" data-id="${incident.id}">
-                            <i class="bi bi-pencil"></i>
-                         </button>`
-                : ''}
-                </td>
+                <td>${incident.actions || '-'}</td>
             `;
+
+            if (currentUser.role.includes('ADMIN') || currentUser.role.includes('HR') || currentUser.role.includes('ENGINEER')) {
+                const td = document.createElement('td');
+                td.className = 'action-cell';
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-sm btn-danger';
+                deleteBtn.textContent = 'Удалить';
+                deleteBtn.addEventListener('click', () => deleteIncident(incident.id));
+                td.appendChild(deleteBtn);
+
+                row.appendChild(td);
+            }
+
             tbody.appendChild(row);
         });
     }
 
-    function showAddIncidentModal() {
-        const modal = new bootstrap.Modal(document.getElementById('incidentModal'));
-        document.getElementById('incident-form').reset();
+    async function deleteIncident(incidentId) {
+        if (!confirm('Вы уверены, что хотите удалить инцидент?')) return;
 
-        // Установим текущую дату и время по умолчанию
+        try {
+            const res = await fetch(`http://127.0.0.1:8080/incidents/${incidentId}`, {
+                method: 'DELETE',
+                headers: {'Authorization': `Bearer ${accessToken}`}
+            });
+            if (!res.ok) throw new Error('Ошибка удаления инцидента');
+            await loadIncidents();
+        } catch (error) {
+            console.error('Ошибка удаления инцидента:', error);
+            alert('Не удалось удалить инцидент');
+        }
+    }
+
+    function showAddIncidentModal() {
+        const modal = new bootstrap.Modal(document.getElementById('addIncidentModal'));
+        document.getElementById('incident-form').reset();
+        selectedEmployees = [];
+        employeeSearchInput.value = '';
+        renderSelectedEmployeesList();
+        renderEmployeeList(allEmployees);
         const now = new Date();
         const timezoneOffset = now.getTimezoneOffset() * 60000;
         const localISOTime = (new Date(now - timezoneOffset)).toISOString().slice(0, 16);
-        document.getElementById('incident-date').value = localISOTime;
+
+        const minDate = new Date(now);
+        minDate.setFullYear(minDate.getFullYear() - 1);
+        const maxDate = new Date(now);
+        maxDate.setFullYear(maxDate.getFullYear() + 1);
+
+        const formatForInput = (date) => {
+            const adjustedDate = new Date(date - date.getTimezoneOffset() * 60000);
+            return adjustedDate.toISOString().slice(0, 16);
+        };
+
+        const dateInput = document.getElementById('incident-date');
+        dateInput.value = localISOTime;
+        dateInput.min = formatForInput(minDate);
+        dateInput.max = formatForInput(maxDate);
 
         modal.show();
     }
 
     async function saveIncident() {
         const form = document.getElementById('incident-form');
-        if (!form.checkValidity()) {
-            form.classList.add('was-validated');
+        form.classList.add('was-validated');
+
+        // Проверяем все обязательные поля кроме поля поиска
+        const requiredFields = ['incident-date', 'incident-type', 'incident-description'];
+        let isValid = true;
+
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (!field.value) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        // Проверяем наличие выбранных сотрудников
+        if (selectedEmployees.length === 0) {
+            isValid = false;
+            // Можно подсветить поле поиска или список выбранных сотрудников
+            document.getElementById('employee-search').classList.add('is-invalid');
+            document.getElementById('selected-employees-list').classList.add('border-danger');
+        } else {
+            document.getElementById('employee-search').classList.remove('is-invalid');
+            document.getElementById('selected-employees-list').classList.remove('border-danger');
+        }
+
+        if (!isValid) {
+            // Прокручиваем к первой ошибке
+            const firstError = document.querySelector('.is-invalid');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             return;
         }
 
         const incidentData = {
-            user: parseInt(employeeSelect.value),
-            date: document.getElementById('incident-date').value,
+            users: selectedEmployees.map(e => e.id),
+            date: document.getElementById('incident-date').value + ':00', // Добавляем секунды, если их нет
             type: document.getElementById('incident-type').value,
-            description: document.getElementById('incident-description').value || null,
-            status: document.getElementById('incident-status').value
+            description: document.getElementById('incident-description').value,
+            actions: document.getElementById('incident-measures').value
         };
 
         try {
-            const response = await fetch('/api/incidents', {
+            const res = await fetch('http://127.0.0.1:8080/incidents', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${accessToken}`
                 },
                 body: JSON.stringify(incidentData)
             });
 
-            if (!response.ok) throw new Error('Ошибка сохранения');
+            if (!res.ok) throw new Error('Ошибка добавления инцидента');
 
-            bootstrap.Modal.getInstance(document.getElementById('incidentModal')).hide();
+            bootstrap.Modal.getInstance(document.getElementById('addIncidentModal')).hide();
+            form.classList.remove('was-validated');
             await loadIncidents();
         } catch (error) {
-            console.error('Ошибка:', error);
+            console.error('Ошибка добавления инцидента:', error);
             alert('Не удалось сохранить инцидент');
         }
     }
 
-    // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
-
     function formatDateTime(dateTimeString) {
-        return new Date(dateTimeString).toLocaleString('ru-RU');
+        if (!dateTimeString) return '-';
+
+        try {
+            // Убираем возможные миллисекунды, если они есть
+            const cleanedDateString = dateTimeString.split('.')[0];
+            const date = new Date(cleanedDateString);
+
+            // Проверяем, что дата валидна
+            if (isNaN(date.getTime())) {
+                console.error('Invalid date:', dateTimeString);
+                return dateTimeString;
+            }
+
+            // Форматируем для русской локали
+            return date.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+        } catch (e) {
+            console.error('Error formatting date:', e);
+            return dateTimeString;
+        }
     }
+
 
     function getIncidentTypeName(type) {
-        switch(type) {
-            case 'INJURY': return 'Травма';
-            case 'EQUIPMENT': return 'Поломка оборудования';
-            case 'OTHER': return 'Другое';
-            default: return type;
+        switch (type) {
+            case 'INJURY':
+                return 'Травма';
+            case 'EQUIPMENT_FAILURE':
+                return 'Поломка оборудования';
+            case 'SAFETY_VIOLATION':
+                return 'Нарушение техники безопасности';
+            case 'FIRE_HAZARD':
+                return 'Пожарная опасность';
+            case 'MATERIAL_SPILL':
+                return 'Разлив химических веществ';
+            case 'GAS_LEAK':
+                return 'Утечка газа';
+            case 'HEALTH_ISSUE':
+                return 'Ухудшение здоровья';
+            case 'SECURITY_BREACH':
+                return 'Нарушение режима безопасности';
+            case 'ENVIRONMENTAL':
+                return 'Экологический инцидент';
+            case 'PROCESS_FAILURE':
+                return 'Нарушение технологического процесса';
+            case 'TRANSPORT_INCIDENT':
+                return 'Транспортное происшествие';
+            case 'FALL_FROM_HEIGHT':
+                return 'Падение с высоты';
+            default:
+                return type; // Возвращаем исходное значение, если тип неизвестен
         }
     }
 
-    function getStatusClass(status) {
-        switch(status) {
-            case 'REPORTED': return 'bg-primary';
-            case 'INVESTIGATION': return 'bg-warning';
-            case 'RESOLVED': return 'bg-success';
-            default: return 'bg-secondary';
-        }
-    }
-
-    function getStatusName(status) {
-        switch(status) {
-            case 'REPORTED': return 'Зарегистрирован';
-            case 'INVESTIGATION': return 'На рассмотрении';
-            case 'RESOLVED': return 'Решён';
-            default: return status;
-        }
-    }
 });

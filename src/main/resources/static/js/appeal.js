@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const saveAppealBtn = document.getElementById('save-appeal');
     const confirmAppealBtn = document.getElementById('confirm-appeal');
     const departmentFilter = document.getElementById('department-filter');
-    const statusFilter = document.getElementById('status-filter');
+    const monthFilter = document.getElementById('month-filter');
 
     let currentUser = null;
     let currentAppealId = null;
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     await loadAppeals();
 
     departmentFilter.addEventListener('change', loadAppeals);
-    statusFilter.addEventListener('change', loadAppeals);
+    monthFilter.addEventListener('change', loadAppeals);
 
     async function loadCurrentUser() {
         try {
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     async function loadAppeals() {
         const departmentId = departmentFilter.value;
-        const status = statusFilter.value;
+        const month = monthFilter.value;
 
         let url = 'http://127.0.0.1:8080/appeals?';
 
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             url = `http://127.0.0.1:8080/appeals/department/${currentUser.departmentId}`;
         } else {
             if (departmentId) url += `departmentId=${departmentId}&`;
-            if (status) url += `status=${status}`;
+            if (month) url += `month=${month}`;
         }
 
         try {

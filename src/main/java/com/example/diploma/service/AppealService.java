@@ -10,7 +10,7 @@ public interface AppealService {
 
     Long create(CreateAppealRequest createAppeal);
 
-    List<AppealResponse> findAll();
+    List<AppealResponse> findAll(Long departmentId, String month);
 
     AppealResponse findById(Long id);
 

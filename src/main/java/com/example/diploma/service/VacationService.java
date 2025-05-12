@@ -10,7 +10,7 @@ public interface VacationService {
 
     Long create(CreateVacationRequest createVacation);
 
-    List<VacationResponse> findAll();
+    List<VacationResponse> findAll(Long departmentId, String month);
 
     VacationResponse findById(Long id);
 

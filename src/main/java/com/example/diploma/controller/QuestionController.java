@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/questions")
 @RequiredArgsConstructor
@@ -25,8 +27,8 @@ public class QuestionController {
     }
 
     @GetMapping
-    public Page<QuestionResponse> findAll(Pageable pageable) {
-        return questionService.findAll(pageable);
+    public List<QuestionResponse> findAll() {
+        return questionService.findAll();
     }
 
     @GetMapping("/{id}")

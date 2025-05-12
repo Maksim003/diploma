@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/briefing-result")
 @RequiredArgsConstructor
@@ -25,8 +27,8 @@ public class BriefingResultController {
     }
 
     @GetMapping
-    public Page<BriefingResultResponse> findAll(Pageable pageable) {
-        return briefingResultService.findAll(pageable);
+    public List<BriefingResultResponse> findAll() {
+        return briefingResultService.findAll();
     }
 
     @GetMapping("/{id}")

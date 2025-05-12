@@ -9,7 +9,9 @@ import com.example.diploma.exception.enums.IncidentException;
 import com.example.diploma.mapper.IncidentMapper;
 import com.example.diploma.repository.jpa.IncidentRepository;
 import com.example.diploma.service.IncidentService;
+import com.example.diploma.specification.IncidentSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class IncidentServiceImpl implements IncidentService {
 
     private final IncidentRepository incidentRepository;
     private final IncidentMapper incidentMapper;
+    private final IncidentSpecification incidentSpecification;
 
     @Override
     @Transactional
@@ -33,8 +36,9 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<IncidentResponse> findAll() {
-        return incidentRepository.findAll().stream()
+    public List<IncidentResponse> findAll(Long departmentId, String month) {
+        Specification<IncidentEntity> specification = incidentSpecification.getSpecification(departmentId, month);
+        return incidentRepository.findAll(specification).stream()
                 .map(incidentMapper::toResponse).toList();
     }
 

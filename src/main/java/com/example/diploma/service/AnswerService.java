@@ -6,11 +6,13 @@ import com.example.diploma.controller.response.AnswerResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface AnswerService {
 
     Long create(CreateAnswerRequest createAnswer);
 
-    Page<AnswerResponse> findAll(Pageable pageable);
+    List<AnswerResponse> findAll();
 
     AnswerResponse findById(Long id);
 

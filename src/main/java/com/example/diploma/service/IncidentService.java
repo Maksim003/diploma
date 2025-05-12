@@ -10,7 +10,7 @@ public interface IncidentService {
 
     Long create(CreateIncidentRequest createIncident);
 
-    List<IncidentResponse> findAll();
+    List<IncidentResponse> findAll(Long departmentId, String month);
 
     IncidentResponse findById(Long id);
 

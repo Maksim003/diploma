@@ -9,7 +9,9 @@ import com.example.diploma.exception.enums.AppealException;
 import com.example.diploma.mapper.AppealMapper;
 import com.example.diploma.repository.jpa.AppealRepository;
 import com.example.diploma.service.AppealService;
+import com.example.diploma.specification.AppealSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class AppealServiceImpl implements AppealService {
 
     private final AppealRepository appealRepository;
     private final AppealMapper appealMapper;
+    private final AppealSpecification appealSpecification;
 
     @Override
     @Transactional
@@ -33,8 +36,9 @@ public class AppealServiceImpl implements AppealService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AppealResponse> findAll() {
-        return appealRepository.findAll().stream()
+    public List<AppealResponse> findAll(Long departmentId, String month) {
+        Specification<AppealEntity> specification = appealSpecification.getSpecification(departmentId, month);
+        return appealRepository.findAll(specification).stream()
                 .map(appealMapper::toResponse).toList();
     }
 

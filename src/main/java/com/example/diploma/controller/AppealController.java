@@ -25,8 +25,9 @@ public class AppealController {
     }
 
     @GetMapping
-    public List<AppealResponse> findAll() {
-        return appealService.findAll();
+    public List<AppealResponse> findAll(@RequestParam(required = false) Long departmentId,
+                                        @RequestParam(required = false) String month) {
+        return appealService.findAll(departmentId, month);
     }
 
     @GetMapping("user/{userId}")

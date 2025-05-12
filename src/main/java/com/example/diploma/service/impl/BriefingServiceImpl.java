@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BriefingServiceImpl implements BriefingService {
@@ -35,8 +37,9 @@ public class BriefingServiceImpl implements BriefingService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<BriefingResponse> findAll(Pageable pageable) {
-        return briefingRepository.findAll(pageable).map(briefingMapper::toResponse);
+    public List<BriefingResponse> findAll() {
+        return briefingRepository.findAll().stream()
+                .map(briefingMapper::toResponse).toList();
     }
 
     @Override

@@ -315,12 +315,19 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Проверяем наличие выбранных сотрудников
         if (selectedEmployees.length === 0) {
             isValid = false;
-            // Можно подсветить поле поиска или список выбранных сотрудников
             document.getElementById('employee-search').classList.add('is-invalid');
             document.getElementById('selected-employees-list').classList.add('border-danger');
         } else {
             document.getElementById('employee-search').classList.remove('is-invalid');
             document.getElementById('selected-employees-list').classList.remove('border-danger');
+
+            // Проверяем, что все сотрудники из одного отдела
+            const departments = new Set(selectedEmployees.map(emp => emp.departmentId));
+            if (departments.size > 1) {
+                isValid = false;
+                alert('Все выбранные сотрудники должны быть из одного отдела!');
+                document.getElementById('selected-employees-list').classList.add('border-danger');
+            }
         }
 
         if (!isValid) {
@@ -334,7 +341,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const incidentData = {
             users: selectedEmployees.map(e => e.id),
-            date: document.getElementById('incident-date').value + ':00', // Добавляем секунды, если их нет
+            date: document.getElementById('incident-date').value + ':00',
             type: document.getElementById('incident-type').value,
             description: document.getElementById('incident-description').value,
             actions: document.getElementById('incident-measures').value
@@ -360,6 +367,73 @@ document.addEventListener('DOMContentLoaded', async function () {
             alert('Не удалось сохранить инцидент');
         }
     }
+
+    // async function saveIncident() {
+    //     const form = document.getElementById('incident-form');
+    //     form.classList.add('was-validated');
+    //
+    //     // Проверяем все обязательные поля кроме поля поиска
+    //     const requiredFields = ['incident-date', 'incident-type', 'incident-description'];
+    //     let isValid = true;
+    //
+    //     requiredFields.forEach(fieldId => {
+    //         const field = document.getElementById(fieldId);
+    //         if (!field.value) {
+    //             isValid = false;
+    //             field.classList.add('is-invalid');
+    //         } else {
+    //             field.classList.remove('is-invalid');
+    //         }
+    //     });
+    //
+    //     // Проверяем наличие выбранных сотрудников
+    //     if (selectedEmployees.length === 0) {
+    //         isValid = false;
+    //         // Можно подсветить поле поиска или список выбранных сотрудников
+    //         document.getElementById('employee-search').classList.add('is-invalid');
+    //         document.getElementById('selected-employees-list').classList.add('border-danger');
+    //     } else {
+    //         document.getElementById('employee-search').classList.remove('is-invalid');
+    //         document.getElementById('selected-employees-list').classList.remove('border-danger');
+    //     }
+    //
+    //     if (!isValid) {
+    //         // Прокручиваем к первой ошибке
+    //         const firstError = document.querySelector('.is-invalid');
+    //         if (firstError) {
+    //             firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    //         }
+    //         return;
+    //     }
+    //
+    //     const incidentData = {
+    //         users: selectedEmployees.map(e => e.id),
+    //         date: document.getElementById('incident-date').value + ':00', // Добавляем секунды, если их нет
+    //         type: document.getElementById('incident-type').value,
+    //         description: document.getElementById('incident-description').value,
+    //         actions: document.getElementById('incident-measures').value
+    //     };
+    //
+    //     try {
+    //         const res = await fetch('http://127.0.0.1:8080/incidents', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': `Bearer ${accessToken}`
+    //             },
+    //             body: JSON.stringify(incidentData)
+    //         });
+    //
+    //         if (!res.ok) throw new Error('Ошибка добавления инцидента');
+    //
+    //         bootstrap.Modal.getInstance(document.getElementById('addIncidentModal')).hide();
+    //         form.classList.remove('was-validated');
+    //         await loadIncidents();
+    //     } catch (error) {
+    //         console.error('Ошибка добавления инцидента:', error);
+    //         alert('Не удалось сохранить инцидент');
+    //     }
+    // }
 
     function formatDateTime(dateTimeString) {
         if (!dateTimeString) return '-';

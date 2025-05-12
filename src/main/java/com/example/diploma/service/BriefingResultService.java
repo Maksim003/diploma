@@ -6,11 +6,13 @@ import com.example.diploma.controller.response.BriefingResultResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface BriefingResultService {
 
     Long create(CreateBriefingResultRequest createBriefingResult);
 
-    Page<BriefingResultResponse> findAll(Pageable pageable);
+    List<BriefingResultResponse> findAll();
 
     BriefingResultResponse findById(Long id);
 

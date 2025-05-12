@@ -25,8 +25,9 @@ public class VacationController {
     }
 
     @GetMapping
-    public List<VacationResponse> findAll() {
-        return vacationService.findAll();
+    public List<VacationResponse> findAll(@RequestParam(required = false) Long departmentId,
+                                          @RequestParam(required = false) String month) {
+        return vacationService.findAll(departmentId, month);
     }
 
     @GetMapping("/{id}")

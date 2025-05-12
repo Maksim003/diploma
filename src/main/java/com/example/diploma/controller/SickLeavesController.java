@@ -25,8 +25,9 @@ public class SickLeavesController {
     }
 
     @GetMapping
-    public List<SickLeavesResponse> findAll() {
-        return sickLeavesService.findAll();
+    public List<SickLeavesResponse> findAll(@RequestParam(required = false) Long departmentId,
+                                            @RequestParam(required = false) String month) {
+        return sickLeavesService.findAll(departmentId, month);
     }
 
     @GetMapping("/{id}")

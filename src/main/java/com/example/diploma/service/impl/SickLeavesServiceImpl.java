@@ -9,7 +9,9 @@ import com.example.diploma.exception.enums.SickLeavesException;
 import com.example.diploma.mapper.SickLeavesMapper;
 import com.example.diploma.repository.jpa.SickLeavesRepository;
 import com.example.diploma.service.SickLeavesService;
+import com.example.diploma.specification.SickLeavesSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class SickLeavesServiceImpl implements SickLeavesService {
 
     private final SickLeavesRepository sickleavesRepository;
     private final SickLeavesMapper sickLeavesMapper;
+    private final SickLeavesSpecification specification;
 
     @Override
     @Transactional
@@ -32,8 +35,9 @@ public class SickLeavesServiceImpl implements SickLeavesService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SickLeavesResponse> findAll() {
-        return sickleavesRepository.findAll().stream()
+    public List<SickLeavesResponse> findAll(Long departmentId, String month) {
+        Specification<SickLeavesEntity> spec = specification.getSpecification(departmentId, month);
+        return sickleavesRepository.findAll(spec).stream()
                 .map(sickLeavesMapper::toResponse).toList();
     }
 

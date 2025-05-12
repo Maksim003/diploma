@@ -1,0 +1,19 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.question-block {
+    padding: 1rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+}
+
+#question-container h5 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+#question-container .form-check {
+    margin-left: 1rem;
+}

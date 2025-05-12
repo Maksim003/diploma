@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
@@ -34,8 +36,9 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<QuestionResponse> findAll(Pageable pageable) {
-        return questionRepository.findAll(pageable).map(questionMapper::toResponse);
+    public List<QuestionResponse> findAll() {
+        return questionRepository.findAll().stream()
+                .map(questionMapper::toResponse).toList();
     }
 
     @Override

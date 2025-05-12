@@ -10,7 +10,7 @@ public interface SickLeavesService {
 
     Long create(CreateSickLeavesRequest createSickLeaves);
 
-    List<SickLeavesResponse> findAll();
+    List<SickLeavesResponse> findAll(Long departmentId, String month);
 
     SickLeavesResponse findById(Long id);
 

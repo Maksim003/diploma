@@ -143,7 +143,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         let url = 'http://127.0.0.1:8080/vacations?';
 
-        // Если пользователь HEAD_ENGINEER, загружаем только его отпуска
         if (currentUser.role.includes('ENGINEER') || currentUser.role.includes('USER')) {
             url = `http://127.0.0.1:8080/vacations/user/${currentUser.id}`;
         } else if (currentUser.role.includes('HEAD')) {
@@ -151,6 +150,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else {
             if (departmentId) url += `departmentId=${departmentId}&`;
             if (month) url += `month=${month}`;
+            console.log(month)
         }
 
         try {

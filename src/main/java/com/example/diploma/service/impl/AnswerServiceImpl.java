@@ -10,10 +10,10 @@ import com.example.diploma.mapper.AnswerMapper;
 import com.example.diploma.repository.jpa.AnswerRepository;
 import com.example.diploma.service.AnswerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +30,9 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<AnswerResponse> findAll(Pageable pageable) {
-        return answerRepository.findAll(pageable).map(answerMapper::toResponse);
+    public List<AnswerResponse> findAll() {
+        return answerRepository.findAll().stream()
+                .map(answerMapper::toResponse).toList();
     }
 
     @Override

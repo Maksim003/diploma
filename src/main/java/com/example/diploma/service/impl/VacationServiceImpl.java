@@ -10,7 +10,9 @@ import com.example.diploma.exception.enums.VacationException;
 import com.example.diploma.mapper.VacationMapper;
 import com.example.diploma.repository.jpa.VacationRepository;
 import com.example.diploma.service.VacationService;
+import com.example.diploma.specification.VacationSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class VacationServiceImpl implements VacationService {
 
     private final VacationRepository vacationRepository;
     private final VacationMapper vacationMapper;
+    private final VacationSpecification vacationSpecification;
 
     @Override
     @Transactional
@@ -33,8 +36,9 @@ public class VacationServiceImpl implements VacationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<VacationResponse> findAll() {
-        return vacationRepository.findAll().stream()
+    public List<VacationResponse> findAll(Long departmentId, String month) {
+        Specification<VacationEntity> specification = vacationSpecification.getSpecification(departmentId, month);
+        return vacationRepository.findAll(specification).stream()
                 .map(vacationMapper::toResponse).toList();
     }
 

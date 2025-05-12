@@ -6,10 +6,10 @@ import com.example.diploma.controller.response.BriefingResponse;
 import com.example.diploma.service.BriefingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/briefings")
@@ -25,8 +25,8 @@ public class BriefingController {
     }
 
     @GetMapping
-    public Page<BriefingResponse> findAll(Pageable pageable) {
-        return briefingService.findAll(pageable);
+    public List<BriefingResponse> findAll() {
+        return briefingService.findAll();
     }
 
     @GetMapping("/{id}")

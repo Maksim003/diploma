@@ -26,8 +26,9 @@ public class IncidentController {
     }
 
     @GetMapping
-    public List<IncidentResponse> findAll() {
-        return incidentService.findAll();
+    public List<IncidentResponse> findAll(@RequestParam(required = false) Long departmentId,
+                                          @RequestParam(required = false) String month) {
+        return incidentService.findAll(departmentId, month);
     }
 
     @GetMapping("/{id}")

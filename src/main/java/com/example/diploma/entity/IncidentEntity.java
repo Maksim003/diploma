@@ -29,10 +29,6 @@ public class IncidentEntity extends BaseEntity<Long> {
     @Column(name = "actions_taken")
     private String actions;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private UserEntity user;
-
     @ManyToMany
     @JoinTable(name = "m2m_incidents_users", joinColumns = @JoinColumn(name = "incident_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))

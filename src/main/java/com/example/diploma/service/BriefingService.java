@@ -3,8 +3,6 @@ package com.example.diploma.service;
 import com.example.diploma.controller.request.briefing.CreateBriefingRequest;
 import com.example.diploma.controller.request.briefing.UpdateBriefingRequest;
 import com.example.diploma.controller.response.BriefingResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 

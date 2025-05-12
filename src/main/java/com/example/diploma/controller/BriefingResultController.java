@@ -1,20 +1,18 @@
 package com.example.diploma.controller;
 
-import com.example.diploma.controller.request.briefingResult.CreateBriefingResultRequest;
+import com.example.diploma.controller.request.briefingResult.BriefingResultSubmitRequest;
 import com.example.diploma.controller.request.briefingResult.UpdateBriefingResultRequest;
 import com.example.diploma.controller.response.BriefingResultResponse;
 import com.example.diploma.service.BriefingResultService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/briefing-result")
+@RequestMapping("/briefing-results")
 @RequiredArgsConstructor
 public class BriefingResultController {
 
@@ -22,8 +20,8 @@ public class BriefingResultController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Long create(@RequestBody @Valid CreateBriefingResultRequest createBriefingResult) {
-        return briefingResultService.create(createBriefingResult);
+    public Long create(@RequestBody @Valid BriefingResultSubmitRequest submitRequest) {
+        return briefingResultService.create(submitRequest);
     }
 
     @GetMapping

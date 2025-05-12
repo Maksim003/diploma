@@ -56,7 +56,7 @@ async function loadBriefings() {
 }
 
 async function loadResults() {
-    const res = await fetch('http://127.0.0.1:8080/briefings/results', {
+    const res = await fetch('http://127.0.0.1:8080/briefing-results', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
     });
     const results = await res.json();
@@ -126,6 +126,8 @@ async function submitBriefing(event) {
     event.preventDefault();
     const type = document.getElementById('briefing-type').value.trim();
     const questions = [];
+    const currentUser = await loadCurrentUser();
+    const creator = currentUser.id;
 
     const blocks = document.querySelectorAll('.question-block');
     for (let i = 0; i < blocks.length; i++) {
@@ -143,7 +145,10 @@ async function submitBriefing(event) {
         questions.push({ name: questionText, answers });
     }
 
-    const payload = { type, questions };
+    const payload = {
+        creator,
+        type,
+        questions };
 
     const res = await fetch('http://127.0.0.1:8080/briefings', {
         method: 'POST',

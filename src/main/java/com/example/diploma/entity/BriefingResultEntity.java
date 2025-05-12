@@ -20,7 +20,7 @@ public class BriefingResultEntity extends BaseEntity<Long> {
     @Column(name = "correct_answers")
     private Integer correctAnswers;
 
-    @Column(name = "percentage")
+    @Column(name = "percentage", insertable = false)
     private Double percentage;
 
     @Column(name = "status")

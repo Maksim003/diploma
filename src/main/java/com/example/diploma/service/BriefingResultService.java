@@ -1,5 +1,6 @@
 package com.example.diploma.service;
 
+import com.example.diploma.controller.request.briefingResult.BriefingResultSubmitRequest;
 import com.example.diploma.controller.request.briefingResult.CreateBriefingResultRequest;
 import com.example.diploma.controller.request.briefingResult.UpdateBriefingResultRequest;
 import com.example.diploma.controller.response.BriefingResultResponse;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public interface BriefingResultService {
 
-    Long create(CreateBriefingResultRequest createBriefingResult);
+    Long create(BriefingResultSubmitRequest submitRequest);
 
     List<BriefingResultResponse> findAll();
 

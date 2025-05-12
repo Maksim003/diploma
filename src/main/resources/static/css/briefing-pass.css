@@ -17,3 +17,16 @@ body {
 #question-container .form-check {
     margin-left: 1rem;
 }
+
+.back-to-briefings {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}

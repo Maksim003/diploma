@@ -1,17 +1,25 @@
 package com.example.diploma.service.impl;
 
-import com.example.diploma.controller.request.briefingResult.CreateBriefingResultRequest;
+import com.example.diploma.controller.request.briefingResult.BriefingAnswerSubmission;
+import com.example.diploma.controller.request.briefingResult.BriefingResultSubmitRequest;
 import com.example.diploma.controller.request.briefingResult.UpdateBriefingResultRequest;
 import com.example.diploma.controller.response.BriefingResultResponse;
+import com.example.diploma.entity.AnswerEntity;
+import com.example.diploma.entity.BriefingEntity;
 import com.example.diploma.entity.BriefingResultEntity;
+import com.example.diploma.entity.UserEntity;
 import com.example.diploma.exception.MyException;
+import com.example.diploma.exception.enums.AnswerException;
+import com.example.diploma.exception.enums.BriefingException;
 import com.example.diploma.exception.enums.BriefingResultException;
+import com.example.diploma.exception.enums.UserException;
 import com.example.diploma.mapper.BriefingResultMapper;
+import com.example.diploma.repository.jpa.AnswerRepository;
+import com.example.diploma.repository.jpa.BriefingRepository;
 import com.example.diploma.repository.jpa.BriefingResultRepository;
+import com.example.diploma.repository.jpa.UserRepository;
 import com.example.diploma.service.BriefingResultService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,12 +31,38 @@ public class BriefingResultServiceImpl implements BriefingResultService {
 
     private final BriefingResultRepository briefingResultRepository;
     private final BriefingResultMapper briefingResultMapper;
+    private final AnswerRepository answerRepository;
+    private final BriefingRepository briefingRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
-    public Long create(CreateBriefingResultRequest createBriefingResult) {
-        BriefingResultEntity briefingResultEntity = briefingResultMapper.toEntity(createBriefingResult);
-        return briefingResultRepository.save(briefingResultEntity).getId();
+    public Long create(BriefingResultSubmitRequest submitRequest) {
+        int total = submitRequest.answers().size();
+        int correct = 0;
+
+        for (BriefingAnswerSubmission submission : submitRequest.answers()) {
+            AnswerEntity selectedAnswer = answerRepository.findById(submission.selectedAnswer())
+                    .orElseThrow(() -> new MyException(AnswerException.NOT_FOUND));
+
+            if (Boolean.TRUE.equals(selectedAnswer.getIsCorrect())) {
+                correct++;
+            }
+        }
+
+        BriefingEntity briefing = briefingRepository.findById(submitRequest.briefingId())
+                .orElseThrow(() -> new MyException(BriefingException.NOT_FOUND));
+
+        UserEntity user = userRepository.findById(submitRequest.userId())
+                .orElseThrow(() -> new MyException(UserException.NOT_FOUND));
+
+        BriefingResultEntity result = new BriefingResultEntity();
+        result.setBriefing(briefing);
+        result.setUser(user);
+        result.setTotalQuestions(total);
+        result.setCorrectAnswers(correct);
+        result.setStatus(correct >= total * 0.7 ? "Пройден" : "Не сдан");
+        return briefingResultRepository.save(result).getId();
     }
 
     @Override

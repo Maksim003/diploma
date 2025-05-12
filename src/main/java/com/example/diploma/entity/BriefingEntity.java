@@ -23,7 +23,7 @@ public class BriefingEntity extends BaseEntity<Long> {
     @JoinColumn(name = "creator")
     private UserEntity creator;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "m2m_briefings_questions", joinColumns = @JoinColumn(name = "briefing_id"),
             inverseJoinColumns = @JoinColumn(name = "question_id"))
     private List<QuestionEntity> questions;

@@ -19,7 +19,7 @@ public class QuestionEntity extends BaseEntity<Long> {
     @Column(name = "name",nullable = false)
     private String name;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "m2m_questions_answers", joinColumns = @JoinColumn(name = "question_id"),
             inverseJoinColumns = @JoinColumn(name = "answer_id"))
     private List<AnswerEntity> answers;

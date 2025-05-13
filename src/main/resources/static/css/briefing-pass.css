@@ -1,23 +1,91 @@
+/*body {*/
+/*    background-color: #f8f9fa;*/
+/*}*/
+
+/*.question-block {*/
+/*    padding: 1rem;*/
+/*    background-color: #fff;*/
+/*    border: 1px solid #dee2e6;*/
+/*    border-radius: 0.5rem;*/
+/*}*/
+
+/*#question-container h5 {*/
+/*    font-size: 1.2rem;*/
+/*    margin-bottom: 0.5rem;*/
+/*}*/
+
+/*#question-container .form-check {*/
+/*    margin-left: 1rem;*/
+/*}*/
+
+/*.back-to-briefings {*/
+/*    background-color: #e74c3c;*/
+/*    color: white;*/
+/*    border: none;*/
+/*    padding: 8px 16px;*/
+/*    border-radius: 4px;*/
+/*    cursor: pointer;*/
+/*    position: absolute;*/
+/*    top: 20px;*/
+/*    right: 20px;*/
+/*    z-index: 1000;*/
+/*}*/
+
+/* Общие стили */
 body {
-    background-color: #f8f9fa;
+    background-color: #f5f7fa;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
 }
 
+.container {
+    max-width: 900px;
+    padding: 20px;
+    position: relative;
+}
+
+/* Заголовок */
+h2#briefing-title {
+    color: #2c3e50;
+    font-weight: 500;
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Блоки вопросов */
 .question-block {
-    padding: 1rem;
-    background-color: #fff;
+    padding: 1.25rem;
+    background-color: #ffffff;
     border: 1px solid #dee2e6;
     border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 #question-container h5 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: #2c3e50;
 }
 
 #question-container .form-check {
     margin-left: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
 }
 
+/* Кнопка "Завершить инструктаж" */
+#submit-btn {
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+/* Кнопка "На главную" */
 .back-to-briefings {
     background-color: #e74c3c;
     color: white;
@@ -29,4 +97,44 @@ body {
     top: 20px;
     right: 20px;
     z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.back-to-briefings:hover {
+    background-color: #c0392b;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    h2#briefing-title {
+        font-size: 1.5rem;
+    }
+
+    .question-block {
+        padding: 1rem;
+    }
+
+    .back-to-dashboard {
+        top: 10px;
+        right: 10px;
+        padding: 6px 12px;
+    }
+}
+
+/* Анимация */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+#question-container .question-block {
+    animation: fadeIn 0.3s ease-out;
 }

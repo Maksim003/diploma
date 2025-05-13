@@ -8,6 +8,8 @@ import com.example.diploma.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
 @RequiredArgsConstructor
 public class DepartmentMapper {
@@ -36,6 +38,9 @@ public class DepartmentMapper {
         Long head = 0L;
         if (departmentEntity.getHead() != null) {
             head = departmentEntity.getHead().getId();
+        }
+        if (departmentEntity.getMembers() == null) {
+            departmentEntity.setMembers(new ArrayList<>());
         }
         return new DepartmentResponse(
                 departmentEntity.getId(),

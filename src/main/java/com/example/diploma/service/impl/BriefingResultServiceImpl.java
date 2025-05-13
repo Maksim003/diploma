@@ -40,7 +40,6 @@ public class BriefingResultServiceImpl implements BriefingResultService {
     public Long create(BriefingResultSubmitRequest submitRequest) {
         int total = submitRequest.answers().size();
         int correct = 0;
-
         for (BriefingAnswerSubmission submission : submitRequest.answers()) {
             AnswerEntity selectedAnswer = answerRepository.findById(submission.selectedAnswer())
                     .orElseThrow(() -> new MyException(AnswerException.NOT_FOUND));
@@ -49,7 +48,6 @@ public class BriefingResultServiceImpl implements BriefingResultService {
                 correct++;
             }
         }
-
         BriefingEntity briefing = briefingRepository.findById(submitRequest.briefingId())
                 .orElseThrow(() -> new MyException(BriefingException.NOT_FOUND));
 
